@@ -28,7 +28,7 @@ The second problem is less serious, but still important: this is a complicated p
 
 ## This tutorial assumes you don't have Dolphin Emulator or a Super Paper Mario ROM downloaded. If you already do have those setup on your PC, the only step you should skip is installing the emulator. 
 
-## And don't worry, if you have save data for Super Paper Mario, this process will not mess it up.
+## And if you have save data for Super Paper Mario, don't worry. If you do it correctly, this process will not change your save data at all. 
 
 ## First, you need to download some stuff. 
 Download the [Dolphin Emulator](https://dolphin-emu.org/download/), the [SPM Randomizer](https://github.com/skawo/Super-Paper-Mario-Level-Editor-Randomizer/release) (don't worry, you don't have to randomize the game for this to work), and a [Super Paper Mario ROM](https://myrient.erista.me/files/Redump/Nintendo%20-%20Wii%20-%20NKit%20RVZ%20[zstd-19-128k]/Super%20Paper%20Mario%20%28USA%29%20%28Rev%202%29.zip). If you don't already have the song you want downloaded, download that as well. 
@@ -41,7 +41,7 @@ Super Paper Mario handles music very weirdly: the songs are sped up to be twice 
 
 ## Now, you have to convert your music into a format the game understands. 
 Super Paper Mario uses an audio format called "BRSTM", which is not a normal file type. Thankfully, some people on the internet have made it easy for us to change mp3s to BRSTMs.
-Go to the website [mu-wave BRSTM Maker](https://kazuki-4ys.github.io/web_apps/mu-wave/). Click the big button in the center of the screen and optionally drag the arrows around to trim the audio. If you're changing background music, make sure to check the "Loop?" checkbox and set the loop's starting point. Once you're satisfied, download the BRSTM file from mu-wave and give it a temporary name, it doesn't matter what for now.
+Go to [mu-wave BRSTM Maker](https://kazuki-4ys.github.io/web_apps/mu-wave/). Click the big button in the center of the screen and optionally drag the arrows around to trim the audio. If you're changing background music, make sure to check the "Loop?" checkbox and set the loop's starting point. Once you're satisfied, download the BRSTM file from mu-wave and give it a temporary name, it doesn't matter what for now.
 
 ## Once you've got the audio, you have to set up the game and the emulator it runs on.
 Start up Dolphin Emulator by unzipping the zip folder and double-clicking "dolphin.exe". If you haven't already, Dolphin will prompt you to pick a location to store your games. I recommend making a new folder inside the Dolphin Emulator folder, just so it all stays self-contained and you're less likely to accidentally delete your games. 
