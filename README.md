@@ -52,5 +52,5 @@ If your game is on the main screen of Dolphin Emulator, right-click it and selec
 ## Time to finally put your custom music into the game!
 Now, start up the SPM Randomizer. Click on "File" → "Extract ISO" → your Dolphin game folder → your ISO file. Super Paper Mario's music is located at R8PE01 (this name is slightly different depending on the region you choose; this is the USA version.) → DATA → files → sound. Use [this website](https://kenrick95.github.io/nikku/) to play the BRSTM files there and find the song you want to replace. Then all you have to do is rename your custom music and place it into the "sound" folder! 
 
-## But you're not quite done yet...
+## You're almost done...
 Start the SPM Randomizer again. Choose "File" → "Pack ISO" → the Super Paper Mario folder, likely R8PE01 (again, this differs between regions). Then choose a name for the new ISO, now with your custom music, and place it into your Dolphin games folder. If you've done everything correctly, you should now be able to start the game through Dolphin Emulator and listen to your custom music!
