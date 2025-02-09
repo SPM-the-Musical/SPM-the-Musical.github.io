@@ -1,9 +1,8 @@
 @font-face {
-    font-family: 'FOT-PopJoy Std B';
-    src: url('PopJoyStd-B.woff2') format('woff2'),
-        url('PopJoyStd-B.woff') format('woff');
-    font-weight: bold;
-    font-style: normal;
-    font-display: swap;
+    font-family: 'PopJoyStd-B';
+    src: url('../PopJoyStd-B.ttf') format('truetype');
 }
 
+body {
+    font-family: 'PopJoyStd-B', sans-serif;
+}
