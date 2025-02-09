@@ -7,6 +7,8 @@ Nutshell.setOptions({
 });
 </script>
 
+<link rel="stylesheet" href="stylesheet.css">
+
 # Welcome!
 This is the unofficial website for Super Paper Mario the Musical!
 
