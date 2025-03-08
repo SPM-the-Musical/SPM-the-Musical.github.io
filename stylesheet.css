@@ -5,10 +5,12 @@ header {
 }
 
 @font-face {
-    font-family: 'PopJoyStd-B';
-    src: url('../PopJoyStd-B.ttf') format('truetype');
+  font-family: 'PopJoyStd-B';
+  src: url('../PopJoyStd-B.ttf') format('truetype');
 }
 
 body {
-    font-family: 'PopJoyStd-B', sans-serif;
+  font-family: 'PopJoyStd-B', sans-serif;
+  background: #FFFFFF
+  color: #000000
 }
