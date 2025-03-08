@@ -1,5 +1,4 @@
 @import "{{ site.theme }}";
-
 header {
   display: none;
 }
@@ -9,11 +8,13 @@ header {
   src: url('../PopJoyStd-B.ttf') format('truetype');
 }
 
+@import "{{ site.theme }}";
 body {
   font-family: 'PopJoyStd-B', sans-serif;
   color: #000000
 }
 
+@import "{{ site.theme }}";
 section {
   background: #ffffff
 }
