@@ -9,6 +9,10 @@ Nutshell.setOptions({
 
 <link rel="stylesheet" href="stylesheet.css">
 
+<p align="center">
+  <img src="https://github.com/SPM-the-Musical/SPM-the-Musical.github.io/blob/main/spmtm%20logo%20HD.png?raw=true" width="550">
+</p>
+
 # Welcome!
 This is the unofficial website for Super Paper Mario the Musical!
 
