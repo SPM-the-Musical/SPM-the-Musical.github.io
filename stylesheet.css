@@ -1,3 +1,9 @@
+@import "{{ site.theme }}";
+
+header {
+  display: none;
+}
+
 @font-face {
     font-family: 'PopJoyStd-B';
     src: url('../PopJoyStd-B.ttf') format('truetype');
