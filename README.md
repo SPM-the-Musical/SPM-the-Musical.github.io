@@ -14,10 +14,10 @@ Nutshell.setOptions({
 </p>
 
 # Welcome to the unofficial website for Super Paper Mario the Musical!
-Latest video: [:Merlee's Mansion](https://youtu.be/rsogzZ3Pzn8)
+Latest video: [:Game Show (That's My Merlee!)](https://youtu.be/zw9xgJxuVR4)
 
 # What is Super Paper Mario the Musical?
-Super Paper Mario the Musical is a YouTube series created by Game Rec Room, a talented group of artists, lyricists, and singers. It is a full lyrical adaptation of [:Super Paper Mario](https://en.m.wikipedia.org/wiki/Super_Paper_Mario), with 10 songs currently released and 40 more planned!
+Super Paper Mario the Musical is a YouTube series created by Game Rec Room, a talented group of artists, lyricists, and singers. It is a full lyrical adaptation of [:Super Paper Mario](https://en.m.wikipedia.org/wiki/Super_Paper_Mario), with 11 songs currently released and 39 more planned!
 
 # Can I help?
 The answer depends on what exactly you want to help with. To find out, you should DM @Coolskeleton95. on Discord, or join the [Game Rec Room Discord server](https://discord.com/invite/G3sxEaBPJR) and ask him there!
