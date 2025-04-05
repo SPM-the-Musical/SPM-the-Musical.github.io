@@ -14,7 +14,7 @@ Nutshell.setOptions({
 </p>
 
 # Welcome to the unofficial website for Super Paper Mario the Musical!
-Latest video: [:Game Show (That's My Merlee!)](https://youtu.be/zw9xgJxuVR4)
+Latest video: [:Dimentio Battle](https://youtu.be/rbJV-8a-zDg)
 
 # What is Super Paper Mario the Musical?
 Super Paper Mario the Musical is a YouTube series created by Game Rec Room, a talented group of artists, lyricists, and singers. It is a full lyrical adaptation of [:Super Paper Mario](https://en.m.wikipedia.org/wiki/Super_Paper_Mario), with 11 songs currently released and 39 more planned!
