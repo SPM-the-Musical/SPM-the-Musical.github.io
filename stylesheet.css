@@ -12,7 +12,7 @@ header {
 body {
   font-family: 'PopJoyStd-B', sans-serif;
   color: #000000
-  cursor: url("http://www.rw-designer.com/cursor-extern.php?id=40779");
+  cursor: url("http://elefantsoftware-en.weebly.com/uploads/4/5/2/2/4522293/364901324.png"), auto;
 }
 
 @import "{{ site.theme }}";
