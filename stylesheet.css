@@ -12,6 +12,7 @@ header {
 body {
   font-family: 'PopJoyStd-B', sans-serif;
   color: #000000
+  cursor: url("http://www.rw-designer.com/cursor-extern.php?id=wii-v64");
 }
 
 @import "{{ site.theme }}";
