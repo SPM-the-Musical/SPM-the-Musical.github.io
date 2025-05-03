@@ -4,12 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SPM Text Preview</title>
-  <link rel="stylesheet" href="stylesheet.css"><!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SPM Text Preview</title>
   <link rel="stylesheet" href="stylesheet.css">
   <style>
     body {
@@ -99,107 +93,5 @@
     inputArea.addEventListener('input', updatePreview);
     updatePreview();
   </script>
-</body>
-</html>
-  <style>
-    body {
-      font-family: sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 2rem;
-      background: #f4f4f4;
-    }
-    textarea {
-      width: 80%;
-      height: 200px;
-      margin-bottom: 1rem;
-      font-family: monospace;
-      font-size: 1rem;
-    }
-    #output {
-      width: 80%;
-      min-height: 100px;
-      background: white;
-      padding: 1rem;
-      border: 1px solid #ccc;
-      white-space: pre-wrap;
-    }
-    .shake-letter {
-      display: inline-block;
-      animation: shake 0.15s infinite;
-    }
-    .wave-letter {
-      display: inline-block;
-      animation: wave 0.9s infinite;
-    }
-    @keyframes shake {
-      0%   { transform: translate(0, 0) rotate(0deg); }
-      20%  { transform: translate(-0.5px, -0.5px) rotate(-1deg); }
-      40%  { transform: translate(-0.5px, 0.5px) rotate(1deg); }
-      60%  { transform: translate(0.5px, 0.5px) rotate(0deg); }
-      80%  { transform: translate(0.5px, -0.5px) rotate(1deg); }
-      100% { transform: translate(0, 0) rotate(-1deg); }
-    }
-    @keyframes wave {
-      0%   { transform: translateY(-3px); }
-      50%  { transform: translateY(3px); }
-      100% { transform: translateY(-3px); }
-    }
-  </style>
-</head>
-<body>
-  <h1>Super Paper Mario Text Preview</h1>
-  <textarea id="input" placeholder="Type your text with tags like <shake>...</shake>, <wave>...</wave>, or <scale 1.5>...</scale>"></textarea>
-  <div id="output"></div>
-  <script>
-  const inputArea = document.getElementById('input');
-  const outputDiv = document.getElementById('output');
-
-  function escapeHTML(text) {
-    return text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  }
-
-  function wrapLettersWithClasses(text, classes = [], extraStyle = '') {
-    return text.split('').map((char, i) => {
-      const delay = `animation-delay:${i * 50}ms;`;
-      return `<span class="${classes.join(' ')}" style="${delay}${extraStyle}">${escapeHTML(char)}</span>`;
-    }).join('');
-  }
-
-  function parseCustomTags(text) {
-    // Recursively parse innermost tags first
-    const tagRegex = /<(\w+)(?: ([^>]+))?>([\s\S]*?)<\/\1>/g;
-
-    function applyTags(str) {
-      return str.replace(tagRegex, (match, tagName, arg, innerContent) => {
-        const parsedInner = applyTags(innerContent); // Recurse
-
-        switch (tagName) {
-          case 'shake':
-            return wrapLettersWithClasses(parsedInner, ['shake-letter']);
-          case 'wave':
-            return wrapLettersWithClasses(parsedInner, ['wave-letter']);
-          case 'scale':
-            const scaleFactor = parseFloat(arg) || 1;
-            return wrapLettersWithClasses(parsedInner, [], `transform: scale(${scaleFactor}); display:inline-block;`);
-          default:
-            return escapeHTML(match); // Unknown tag
-        }
-      });
-    }
-
-    return applyTags(text);
-  }
-
-  function updatePreview() {
-    const raw = inputArea.value;
-    outputDiv.innerHTML = parseCustomTags(raw);
-  }
-
-  inputArea.addEventListener('input', updatePreview);
-  updatePreview();
-</script>
-
 </body>
 </html>
