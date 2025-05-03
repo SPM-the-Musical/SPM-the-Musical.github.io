@@ -6,88 +6,106 @@
   <title>SPM Text Preview</title>
   <link rel="stylesheet" href="stylesheet.css">
   <style>
-    body {
-      font-family: sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 2rem;
-      background: #f4f4f4;
-    }
-    textarea {
-      width: 80%;
-      height: 200px;
-      margin-bottom: 1rem;
-      font-family: monospace;
-      font-size: 1rem;
-    }
-    #output {
-      width: 80%;
-      min-height: 100px;
-      background: white;
-      padding: 1rem;
-      border: 1px solid #ccc;
-      white-space: pre-wrap;
-    }
-    .shake-letter {
-      display: inline-block;
-      animation: shake 0.15s infinite;
-    }
-    .wave-letter {
-      display: inline-block;
-      animation: wave 0.9s infinite;
-    }
-    @keyframes shake {
-      0%   { transform: translate(0, 0) rotate(0deg); }
-      20%  { transform: translate(-0.5px, -0.5px) rotate(-1deg); }
-      40%  { transform: translate(-0.5px, 0.5px) rotate(1deg); }
-      60%  { transform: translate(0.5px, 0.5px) rotate(0deg); }
-      80%  { transform: translate(0.5px, -0.5px) rotate(1deg); }
-      100% { transform: translate(0, 0) rotate(-1deg); }
-    }
-    @keyframes wave {
-      0%   { transform: translateY(-3px); }
-      50%  { transform: translateY(3px); }
-      100% { transform: translateY(-3px); }
-    }
+    body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 2rem; background: #f4f4f4; }
+    textarea { width: 80%; height: 200px; margin-bottom: 1rem; font-family: monospace; font-size: 1rem; }
+    #output { width: 80%; min-height: 100px; background: white; padding: 1rem; border: 1px solid #ccc; white-space: pre-wrap; }
+    .shake-letter { display:inline-block; animation:shake 0.15s infinite; }
+    .wave-letter { display:inline-block; animation:wave 0.9s infinite; }
+    @keyframes shake { 0%{transform:translate(0,0)rotate(0)}20%{transform:translate(-0.5px,-0.5px)rotate(-1deg)}40%{transform:translate(-0.5px,0.5px)rotate(1deg)}60%{transform:translate(0.5px,0.5px)rotate(0)}80%{transform:translate(0.5px,-0.5px)rotate(1deg)}100%{transform:translate(0,0)rotate(-1deg)} }
+    @keyframes wave { 0%{transform:translateY(-3px)}50%{transform:translateY(3px)}100%{transform:translateY(-3px)} }
   </style>
 </head>
 <body>
   <h1>Super Paper Mario Text Preview</h1>
-  <textarea id="input" placeholder="Type your text with tags like <shake>...</shake>, <wave>...</wave>, or <scale 1.5>...</scale>"></textarea>
+  <textarea id="input" placeholder="Try nested tags: <scale 2><shake><wave>all three</wave></shake></scale>"></textarea>
   <div id="output"></div>
   <script>
     const inputArea = document.getElementById('input');
     const outputDiv = document.getElementById('output');
 
-    function wrapLettersWithClass(text, className) {
-      return text.split('').map((char, i) => {
-        return `<span class="${className}" style="animation-delay:${i * 50}ms">${char.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>`;
-      }).join('');
+    // Creates nested spans: outer scale, then wave, then shake, then text
+    function createSpan(char, effects, scale, delay) {
+      // Text node
+      const textNode = document.createTextNode(char === ' ' ? '\u00A0' : char);
+      let node = textNode;
+
+      // Shake span (inner)
+      if (effects.includes('shake')) {
+        const shakeSpan = document.createElement('span');
+        shakeSpan.className = 'shake-letter';
+        shakeSpan.style.animationDelay = delay + 'ms';
+        shakeSpan.appendChild(node);
+        node = shakeSpan;
+      }
+
+      // Wave span (outer of shake)
+      if (effects.includes('wave')) {
+        const waveSpan = document.createElement('span');
+        waveSpan.className = 'wave-letter';
+        waveSpan.style.animationDelay = delay + 'ms';
+        waveSpan.appendChild(node);
+        node = waveSpan;
+      }
+
+      // Scale span (outermost)
+      if (scale !== 1) {
+        const scaleSpan = document.createElement('span');
+        scaleSpan.style.display = 'inline-block';
+        scaleSpan.style.fontSize = scale + 'em';
+        scaleSpan.appendChild(node);
+        node = scaleSpan;
+      }
+
+      return node;
     }
 
     function parseCustomTags(text) {
-      // Handle <shake>
-      text = text.replace(/<shake>([\s\S]*?)<\/shake>/g, (match, content) => {
-        return wrapLettersWithClass(content, 'shake-letter');
-      });
-
-      // Handle <wave>
-      text = text.replace(/<wave>([\s\S]*?)<\/wave>/g, (match, content) => {
-        return wrapLettersWithClass(content, 'wave-letter');
-      });
-
-      // Handle <scale n>
-      text = text.replace(/<scale\s+([0-9]*\.?[0-9]+)>([\s\S]*?)<\/scale>/g, (match, factor, content) => {
-        return `<span style="display:inline-block; transform: scale(${factor}); transform-origin: left center;">${content.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>`;
-      });
-
-      return text;
+      const frag = document.createDocumentFragment();
+      const stack = [];
+      let delayCount = 0;
+      let i = 0;
+      while (i < text.length) {
+        if (text[i] === '<') {
+          const open = text.slice(i).match(/^<\s*(shake|wave|scale)\s*([^>]*)>/i);
+          const close = text.slice(i).match(/^<\s*\/\s*(shake|wave|scale)\s*>/i);
+          if (open) {
+            const tag = open[1].toLowerCase();
+            if (tag === 'scale') {
+              const factor = parseFloat(open[2]) || 1;
+              stack.push({type: 'scale', factor});
+            } else {
+              stack.push({type: tag});
+            }
+            i += open[0].length;
+            continue;
+          } else if (close) {
+            const tag = close[1].toLowerCase();
+            for (let j = stack.length - 1; j >= 0; j--) {
+              if (stack[j].type === tag) { stack.splice(j, 1); break; }
+            }
+            i += close[0].length;
+            continue;
+          }
+        }
+        const char = text[i];
+        // Determine active effects, wave first, then shake
+        const hasWave = stack.some(e => e.type === 'wave');
+        const hasShake = stack.some(e => e.type === 'shake');
+        const effects = [];
+        if (hasWave) effects.push('wave');
+        if (hasShake) effects.push('shake');
+        // Determine scale
+        const scale = stack.filter(e => e.type === 'scale').reduce((s, e) => s * e.factor, 1);
+        frag.appendChild(createSpan(char, effects, scale, delayCount * 50));
+        delayCount++;
+        i++;
+      }
+      return frag;
     }
 
     function updatePreview() {
-      const raw = inputArea.value;
-      outputDiv.innerHTML = parseCustomTags(raw);
+      outputDiv.innerHTML = '';
+      outputDiv.appendChild(parseCustomTags(inputArea.value));
     }
 
     inputArea.addEventListener('input', updatePreview);
