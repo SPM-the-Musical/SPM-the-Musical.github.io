@@ -44,12 +44,13 @@
       80%  { transform: translate(1px, -1px) rotate(1deg); }
       100% { transform: translate(0, 0) rotate(-1deg); }
     }
-    @keyframes wave {
-      0%  { transform: translateY(-2.5px); }
-      33.33%  { transform: translateY(-2.5px); }
-      66.67%  { transform: translateY(2.5px); }
-      100%  { transform: translateY(2.5px); }
-    }
+@keyframes wave {
+  0%    { transform: translateY(-2.5px); }
+  25%   { transform: translateY(0px); }
+  50%   { transform: translateY(2.5px); }
+  75%   { transform: translateY(0px); }
+  100%  { transform: translateY(-2.5px); }
+}
   </style>
 </head>
 <body>
