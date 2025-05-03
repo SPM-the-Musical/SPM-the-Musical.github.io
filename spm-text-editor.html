@@ -18,21 +18,43 @@
       font-family: 'SPMText', sans-serif;
     }
 
-    /* fade-in keyframes */
+    /* fade-in animation */
     @keyframes fadeIn {
       from { opacity: 0; }
       to   { opacity: 1; }
     }
-    /* helper class if you ever want to apply in CSS directly */
-    .fade-letter {
+    /* dynamic shrink animation */
+    @keyframes dynamicShrink {
+      from { transform: scale(var(--dyn-factor)); }
+      to   { transform: scale(1); }
+    }
+    /* helper classes */
+    .shake-letter { display:inline-block; animation:shake 0.15s infinite; }
+    .wave-letter  { display:inline-block; animation:wave  0.9s  infinite; }
+    .dynamic-letter {
       display: inline-block;
-      opacity: 0;
-      animation-name: fadeIn;
-      animation-duration: 0.2s;
+      transform: scale(var(--dyn-factor));
+      animation-name: dynamicShrink;
+      animation-duration: 0.05s;
       animation-fill-mode: forwards;
     }
 
-    /* existing styles */
+    /* keyframes for shake & wave */
+    @keyframes shake {
+      0%   {transform:translate(0,0)rotate(0)}
+      20%  {transform:translate(-0.5px,-0.5px)rotate(-1deg)}
+      40%  {transform:translate(-0.5px,0.5px)rotate(1deg)}
+      60%  {transform:translate(0.5px,0.5px)rotate(0)}
+      80%  {transform:translate(0.5px,-0.5px)rotate(1deg)}
+      100% {transform:translate(0,0)rotate(-1deg)}
+    }
+    @keyframes wave {
+      0%   {transform:translateY(-3px)}
+      50%  {transform:translateY(3px)}
+      100% {transform:translateY(-3px)}
+    }
+
+    /* layout */
     body {
       display: flex;
       flex-direction: column;
@@ -46,47 +68,35 @@
       margin-bottom: 1rem;
       font-family: monospace;
       font-size: 1rem;
+      white-space: pre;
+      resize: both;
     }
     #output {
       width: 80%;
-      min-height: 100px;
+      height: 150px;
       background: white;
       padding: 1rem;
       border: 1px solid #ccc;
       white-space: pre-wrap;
-    }
-    .shake-letter { display:inline-block; animation:shake 0.15s infinite; }
-    .wave-letter  { display:inline-block; animation:wave  0.9s  infinite; }
-    @keyframes shake {
-      0% {transform:translate(0,0)rotate(0)}
-      20% {transform:translate(-0.5px,-0.5px)rotate(-1deg)}
-      40% {transform:translate(-0.5px,0.5px)rotate(1deg)}
-      60% {transform:translate(0.5px,0.5px)rotate(0)}
-      80% {transform:translate(0.5px,-0.5px)rotate(1deg)}
-      100%{transform:translate(0,0)rotate(-1deg)}
-    }
-    @keyframes wave {
-      0%   {transform:translateY(-3px)}
-      50%  {transform:translateY(3px)}
-      100% {transform:translateY(-3px)}
+      cursor: pointer;
+      resize: both;
+      overflow: auto;
     }
   </style>
 </head>
 <body>
   <h1>Super Paper Mario Text Preview</h1>
-  <textarea id="input" placeholder="Use formatting from Super Paper Mario! Supports <shake>, <wave>, and <scale x>!"></textarea>
-  <div id="output"></div>
+  <textarea id="input" placeholder="Use formatting tags from Super Paper Mario! Supports &lt;shake&gt;, &lt;wave&gt;, &#10;&lt;scale x&gt;, &lt;dynamic 3&gt;, and &lt;wait x&gt;."></textarea>
+  <div id="output" title="Click to advance"></div>
 
   <script>
     const inputArea = document.getElementById('input');
     const outputDiv = document.getElementById('output');
+    let pages = [];
+    let currentPage = 0;
 
-    function createSpan(char, effects, scale, delay) {
-      // base text node
-      const textNode = document.createTextNode(char === ' ' ? '\u00A0' : char);
-      let node = textNode;
-
-      // shake
+    function createSpan(char, effects, scale, dynFactor, delay) {
+      let node = document.createTextNode(char === ' ' ? '\u00A0' : char);
       if (effects.includes('shake')) {
         const shakeSpan = document.createElement('span');
         shakeSpan.className = 'shake-letter';
@@ -94,8 +104,6 @@
         shakeSpan.appendChild(node);
         node = shakeSpan;
       }
-
-      // wave
       if (effects.includes('wave')) {
         const waveSpan = document.createElement('span');
         waveSpan.className = 'wave-letter';
@@ -103,8 +111,6 @@
         waveSpan.appendChild(node);
         node = waveSpan;
       }
-
-      // scale
       if (scale !== 1) {
         const scaleSpan = document.createElement('span');
         scaleSpan.style.display = 'inline-block';
@@ -112,12 +118,18 @@
         scaleSpan.appendChild(node);
         node = scaleSpan;
       }
-
-      // fade-in wrapper (outermost)
+      if (dynFactor !== 1) {
+        const dynSpan = document.createElement('span');
+        dynSpan.className = 'dynamic-letter';
+        dynSpan.style.setProperty('--dyn-factor', dynFactor);
+        dynSpan.style.animationDelay = delay + 'ms';
+        dynSpan.appendChild(node);
+        node = dynSpan;
+      }
       const fadeSpan = document.createElement('span');
       fadeSpan.style.display = 'inline-block';
       fadeSpan.style.opacity = '0';
-      fadeSpan.style.animation = `fadeIn 0.2s forwards ${delay}ms`;
+      fadeSpan.style.animation = `fadeIn 0s forwards ${delay}ms`;
       fadeSpan.appendChild(node);
       return fadeSpan;
     }
@@ -126,19 +138,24 @@
       const frag = document.createDocumentFragment();
       const stack = [];
       let delayCount = 0;
+      let extraDelay = 0;
       let i = 0;
       while (i < text.length) {
-        if (text[i] === '<') {
-          const open  = text.slice(i).match(/^<\s*(shake|wave|scale)\s*([^>]*)>/i);
-          const close = text.slice(i).match(/^<\s*\/\s*(shake|wave|scale)\s*>/i);
+        const char = text[i];
+        if (char === '\n') {
+          frag.appendChild(document.createElement('br'));
+          i++;
+          continue;
+        }
+        if (char === '<') {
+          const open = text.slice(i).match(/^<\s*(shake|wave|scale|dynamic|wait)\s*([^>]*)>/i);
+          const close= text.slice(i).match(/^<\s*\/\s*(shake|wave|scale|dynamic)\s*>/i);
           if (open) {
             const tag = open[1].toLowerCase();
-            if (tag === 'scale') {
-              const factor = parseFloat(open[2]) || 1;
-              stack.push({type: 'scale', factor});
-            } else {
-              stack.push({type: tag});
-            }
+            const arg = parseFloat(open[2]) || 0;
+            if (tag === 'wait') { extraDelay += arg; }
+            else if (tag === 'scale' || tag === 'dynamic') { stack.push({type: tag, factor: arg}); }
+            else { stack.push({type: tag}); }
             i += open[0].length;
             continue;
           } else if (close) {
@@ -150,27 +167,45 @@
             continue;
           }
         }
-        const char = text[i];
-        const hasWave  = stack.some(e => e.type === 'wave');
-        const hasShake = stack.some(e => e.type === 'shake');
-        const effects  = [];
-        if (hasWave)  effects.push('wave');
+        const hasWave = stack.some(e => e.type === 'wave');
+        const hasShake= stack.some(e => e.type === 'shake');
+        const effects = [];
+        if (hasWave) effects.push('wave');
         if (hasShake) effects.push('shake');
-        const scale = stack
-          .filter(e => e.type === 'scale')
-          .reduce((s, e) => s * e.factor, 1);
-
-        frag.appendChild(createSpan(char, effects, scale, delayCount * 50));
+        const scale = stack.filter(e => e.type==='scale').reduce((s,e)=>s*e.factor,1);
+        const dynFactor = stack.filter(e=>e.type==='dynamic').reduce((s,e)=>s*e.factor,1);
+        const delay = delayCount * 25 + extraDelay;
+        frag.appendChild(createSpan(char, effects, scale, dynFactor, delay));
         delayCount++;
         i++;
       }
       return frag;
     }
 
-    function updatePreview() {
-      outputDiv.innerHTML = '';
-      outputDiv.appendChild(parseCustomTags(inputArea.value));
+    function generatePages() {
+      const raw = inputArea.value;
+      const parts = raw.split(/\n\s*\n/);
+      pages = parts.map(part => parseCustomTags(part));
+      currentPage = 0;
     }
+
+    function showPage(idx) {
+      outputDiv.innerHTML = '';
+      outputDiv.appendChild(pages[idx]);
+    }
+
+    function updatePreview() {
+      generatePages();
+      showPage(0);
+    }
+
+    outputDiv.addEventListener('click', () => {
+      if (pages.length <= 1) return;
+      if (currentPage < pages.length - 1) {
+        currentPage++;
+        showPage(currentPage);
+      }
+    });
 
     inputArea.addEventListener('input', updatePreview);
     updatePreview();
