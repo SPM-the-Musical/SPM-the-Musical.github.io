@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SPM Text Preview</title>
-  <link rel="stylesheet" href="stylesheet.css">
   <style>
     body {
       font-family: sans-serif;
@@ -31,24 +30,26 @@
     }
     .shake-letter {
       display: inline-block;
-      animation: shake 0.15s infinite;
+      animation: shake 0.3s infinite;
     }
     .wave-letter {
       display: inline-block;
-      animation: wave 0.9s infinite;
+      animation: wave 1.5s infinite;
     }
     @keyframes shake {
       0%   { transform: translate(0, 0) rotate(0deg); }
-      20%  { transform: translate(-0.5px, -0.5px) rotate(-1deg); }
-      40%  { transform: translate(-0.5px, 0.5px) rotate(1deg); }
-      60%  { transform: translate(0.5px, 0.5px) rotate(0deg); }
-      80%  { transform: translate(0.5px, -0.5px) rotate(1deg); }
+      20%  { transform: translate(-1px, -1px) rotate(-1deg); }
+      40%  { transform: translate(-1px, 1px) rotate(1deg); }
+      60%  { transform: translate(1px, 1px) rotate(0deg); }
+      80%  { transform: translate(1px, -1px) rotate(1deg); }
       100% { transform: translate(0, 0) rotate(-1deg); }
     }
     @keyframes wave {
-      0%   { transform: translateY(-3px); }
-      50%  { transform: translateY(3px); }
-      100% { transform: translateY(-3px); }
+      0%   { transform: translateY(-2.5px); }
+      25%  { transform: translateY(-2.5px); }
+      50%  { transform: translateY(2.5px); }
+      75%  { transform: translateY(2.5px); }
+      100% { transform: translateY(-2.5px); }
     }
   </style>
 </head>
@@ -60,29 +61,66 @@
     const inputArea = document.getElementById('input');
     const outputDiv = document.getElementById('output');
 
-    function wrapLettersWithClass(text, className) {
-      return text.split('').map((char, i) => {
-        return `<span class="${className}" style="animation-delay:${i * 50}ms">${char.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>`;
-      }).join('');
+    function escapeHTML(text) {
+      return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function wrapLettersWithClasses(text, classList = [], extraStyle = '') {
+      const div = document.createElement('div');
+      div.innerHTML = text;
+      const frag = document.createDocumentFragment();
+
+      function wrapNode(node) {
+        if (node.nodeType === Node.TEXT_NODE) {
+          const spanContainer = document.createElement('span');
+          [...node.textContent].forEach((char, i) => {
+            const span = document.createElement('span');
+            span.textContent = char;
+            span.style.animationDelay = `${i * 50}ms`;
+            if (classList.length) span.className = classList.join(' ');
+            if (extraStyle) span.style.cssText += extraStyle;
+            spanContainer.appendChild(span);
+          });
+          return spanContainer;
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+          const clone = node.cloneNode(false);
+          node.childNodes.forEach(child => {
+            clone.appendChild(wrapNode(child));
+          });
+          return clone;
+        }
+        return document.createTextNode('');
+      }
+
+      div.childNodes.forEach(child => {
+        frag.appendChild(wrapNode(child));
+      });
+      const container = document.createElement('div');
+      container.appendChild(frag);
+      return container.innerHTML;
     }
 
     function parseCustomTags(text) {
-      // Handle <shake>
-      text = text.replace(/<shake>([\s\S]*?)<\/shake>/g, (match, content) => {
-        return wrapLettersWithClass(content, 'shake-letter');
-      });
+      const tagRegex = /<(shake|wave|scale)(?: ([^>]+))?>([\s\S]*?)<\/\1>/gi;
 
-      // Handle <wave>
-      text = text.replace(/<wave>([\s\S]*?)<\/wave>/g, (match, content) => {
-        return wrapLettersWithClass(content, 'wave-letter');
-      });
+      function recursiveParse(str) {
+        return str.replace(tagRegex, (match, tag, arg, content) => {
+          const inner = recursiveParse(content);
+          switch (tag.toLowerCase()) {
+            case 'shake':
+              return wrapLettersWithClasses(inner, ['shake-letter']);
+            case 'wave':
+              return wrapLettersWithClasses(inner, ['wave-letter']);
+            case 'scale':
+              const factor = parseFloat(arg) || 1;
+              return wrapLettersWithClasses(inner, [], `transform: scale(${factor}); display:inline-block;`);
+            default:
+              return escapeHTML(match);
+          }
+        });
+      }
 
-      // Handle <scale n>
-      text = text.replace(/<scale\s+([0-9]*\.?[0-9]+)>([\s\S]*?)<\/scale>/g, (match, factor, content) => {
-        return `<span style="display:inline-block; transform: scale(${factor}); transform-origin: left center;">${content.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>`;
-      });
-
-      return text;
+      return recursiveParse(text);
     }
 
     function updatePreview() {
