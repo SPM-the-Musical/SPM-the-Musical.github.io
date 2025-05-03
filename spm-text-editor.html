@@ -62,27 +62,29 @@
 
     function wrapLettersWithClass(text, className) {
       return text.split('').map((char, i) => {
-        return `<span class="${className}" style="animation-delay:${i * 50}ms">${char.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>`;
+        return `<span class="${className}" style="animation-delay:${i * 50}ms">${char}</span>`;
       }).join('');
     }
 
     function parseCustomTags(text) {
-      // Handle <shake>
-      text = text.replace(/<shake>([\s\S]*?)<\/shake>/g, (match, content) => {
-        return wrapLettersWithClass(content, 'shake-letter');
-      });
+      function processTags(str) {
+        // Handle <scale>
+        str = str.replace(/<scale\s+([0-9]*\.?[0-9]+)>([\s\S]*?)<\/scale>/g, (_, factor, content) => {
+          return `<span style="display:inline-block; transform: scale(${factor}); transform-origin: left center;">${processTags(content)}</span>`;
+        });
+        // Handle <shake>
+        str = str.replace(/<shake>([\s\S]*?)<\/shake>/g, (_, content) => {
+          return wrapLettersWithClass(processTags(content), 'shake-letter');
+        });
+        // Handle <wave>
+        str = str.replace(/<wave>([\s\S]*?)<\/wave>/g, (_, content) => {
+          return wrapLettersWithClass(processTags(content), 'wave-letter');
+        });
+        // Escape remaining HTML
+        return str.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
 
-      // Handle <wave>
-      text = text.replace(/<wave>([\s\S]*?)<\/wave>/g, (match, content) => {
-        return wrapLettersWithClass(content, 'wave-letter');
-      });
-
-      // Handle <scale n>
-      text = text.replace(/<scale\s+([0-9]*\.?[0-9]+)>([\s\S]*?)<\/scale>/g, (match, factor, content) => {
-        return `<span style="display:inline-block; transform: scale(${factor}); transform-origin: left center;">${content.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>`;
-      });
-
-      return text;
+      return processTags(text);
     }
 
     function updatePreview() {
