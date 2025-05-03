@@ -6,13 +6,55 @@
   <title>SPM Text Preview</title>
   <link rel="stylesheet" href="stylesheet.css">
   <style>
-    body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 2rem; background: #f4f4f4; }
-    textarea { width: 80%; height: 200px; margin-bottom: 1rem; font-family: monospace; font-size: 1rem; }
-    #output { width: 80%; min-height: 100px; background: white; padding: 1rem; border: 1px solid #ccc; white-space: pre-wrap; }
+
+    @font-face {
+      font-family: 'SPMText';
+      src: url('PopJoyStd-B.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    body, #output {
+      font-family: 'SPMText', sans-serif;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+      background: #f4f4f4;
+    }
+    textarea {
+      width: 80%;
+      height: 200px;
+      margin-bottom: 1rem;
+      font-family: monospace;
+      font-size: 1rem;
+    }
+    #output {
+      width: 80%;
+      min-height: 100px;
+      background: white;
+      padding: 1rem;
+      border: 1px solid #ccc;
+      white-space: pre-wrap;
+    }
     .shake-letter { display:inline-block; animation:shake 0.15s infinite; }
     .wave-letter { display:inline-block; animation:wave 0.9s infinite; }
-    @keyframes shake { 0%{transform:translate(0,0)rotate(0)}20%{transform:translate(-0.5px,-0.5px)rotate(-1deg)}40%{transform:translate(-0.5px,0.5px)rotate(1deg)}60%{transform:translate(0.5px,0.5px)rotate(0)}80%{transform:translate(0.5px,-0.5px)rotate(1deg)}100%{transform:translate(0,0)rotate(-1deg)} }
-    @keyframes wave { 0%{transform:translateY(-3px)}50%{transform:translateY(3px)}100%{transform:translateY(-3px)} }
+    @keyframes shake {
+      0% {transform:translate(0,0)rotate(0)}
+      20% {transform:translate(-0.5px,-0.5px)rotate(-1deg)}
+      40% {transform:translate(-0.5px,0.5px)rotate(1deg)}
+      60% {transform:translate(0.5px,0.5px)rotate(0)}
+      80% {transform:translate(0.5px,-0.5px)rotate(1deg)}
+      100% {transform:translate(0,0)rotate(-1deg)}
+    }
+    @keyframes wave {
+      0% {transform:translateY(-3px)}
+      50% {transform:translateY(3px)}
+      100% {transform:translateY(-3px)}
+    }
   </style>
 </head>
 <body>
@@ -23,13 +65,10 @@
     const inputArea = document.getElementById('input');
     const outputDiv = document.getElementById('output');
 
-    // Creates nested spans: outer scale, then wave, then shake, then text
     function createSpan(char, effects, scale, delay) {
-      // Text node
       const textNode = document.createTextNode(char === ' ' ? '\u00A0' : char);
       let node = textNode;
 
-      // Shake span (inner)
       if (effects.includes('shake')) {
         const shakeSpan = document.createElement('span');
         shakeSpan.className = 'shake-letter';
@@ -37,8 +76,6 @@
         shakeSpan.appendChild(node);
         node = shakeSpan;
       }
-
-      // Wave span (outer of shake)
       if (effects.includes('wave')) {
         const waveSpan = document.createElement('span');
         waveSpan.className = 'wave-letter';
@@ -46,8 +83,6 @@
         waveSpan.appendChild(node);
         node = waveSpan;
       }
-
-      // Scale span (outermost)
       if (scale !== 1) {
         const scaleSpan = document.createElement('span');
         scaleSpan.style.display = 'inline-block';
@@ -55,7 +90,6 @@
         scaleSpan.appendChild(node);
         node = scaleSpan;
       }
-
       return node;
     }
 
@@ -88,13 +122,11 @@
           }
         }
         const char = text[i];
-        // Determine active effects, wave first, then shake
         const hasWave = stack.some(e => e.type === 'wave');
         const hasShake = stack.some(e => e.type === 'shake');
         const effects = [];
         if (hasWave) effects.push('wave');
         if (hasShake) effects.push('shake');
-        // Determine scale
         const scale = stack.filter(e => e.type === 'scale').reduce((s, e) => s * e.factor, 1);
         frag.appendChild(createSpan(char, effects, scale, delayCount * 50));
         delayCount++;
