@@ -68,8 +68,13 @@
       margin-bottom: 1rem;
       font-family: monospace;
       font-size: 1rem;
-      white-space: pre;
+      white-space: pre-wrap;
+      word-wrap: break-word;
       resize: both;
+    }
+    textarea::placeholder {
+      white-space: pre-wrap;
+      word-wrap: break-word;
     }
     #output {
       width: 80%;
@@ -86,7 +91,7 @@
 </head>
 <body>
   <h1>Super Paper Mario Text Preview</h1>
-  <textarea id="input" placeholder="Use formatting tags from Super Paper Mario! Supports &lt;shake&gt;, &lt;wave&gt;, &#10;&lt;scale x&gt;, &lt;dynamic 3&gt;, and &lt;wait x&gt;."></textarea>
+  <textarea id="input" placeholder="Use formatting tags from Super Paper Mario! Supports \n<shake>, <wave>, <scale x>, <dynamic n>, <wait x>."></textarea>
   <div id="output" title="Click to advance"></div>
 
   <script>
@@ -149,13 +154,13 @@
         }
         if (char === '<') {
           const open = text.slice(i).match(/^<\s*(shake|wave|scale|dynamic|wait)\s*([^>]*)>/i);
-          const close= text.slice(i).match(/^<\s*\/\s*(shake|wave|scale|dynamic)\s*>/i);
+          const close = text.slice(i).match(/^<\s*\/\s*(shake|wave|scale|dynamic)\s*>/i);
           if (open) {
             const tag = open[1].toLowerCase();
             const arg = parseFloat(open[2]) || 0;
-            if (tag === 'wait') { extraDelay += arg; }
-            else if (tag === 'scale' || tag === 'dynamic') { stack.push({type: tag, factor: arg}); }
-            else { stack.push({type: tag}); }
+            if (tag === 'wait') extraDelay += arg;
+            else if (tag === 'scale' || tag === 'dynamic') stack.push({type: tag, factor: arg});
+            else stack.push({type: tag});
             i += open[0].length;
             continue;
           } else if (close) {
@@ -168,12 +173,12 @@
           }
         }
         const hasWave = stack.some(e => e.type === 'wave');
-        const hasShake= stack.some(e => e.type === 'shake');
+        const hasShake = stack.some(e => e.type === 'shake');
         const effects = [];
         if (hasWave) effects.push('wave');
         if (hasShake) effects.push('shake');
         const scale = stack.filter(e => e.type==='scale').reduce((s,e)=>s*e.factor,1);
-        const dynFactor = stack.filter(e=>e.type==='dynamic').reduce((s,e)=>s*e.factor,1);
+        const dynFactor = stack.filter(e => e.type==='dynamic').reduce((s,e)=>s*e.factor,1);
         const delay = delayCount * 25 + extraDelay;
         frag.appendChild(createSpan(char, effects, scale, dynFactor, delay));
         delayCount++;
