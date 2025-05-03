@@ -31,11 +31,11 @@
     }
     .shake-letter {
       display: inline-block;
-      animation: shake 0.3s infinite;
+      animation: shake 0.1s infinite;
     }
     .wave-letter {
       display: inline-block;
-      animation: wave 1.5s infinite;
+      animation: wave 1.2s infinite;
     }
     @keyframes shake {
       0%   { transform: translate(0, 0) rotate(0deg); }
@@ -46,11 +46,9 @@
       100% { transform: translate(0, 0) rotate(-1deg); }
     }
     @keyframes wave {
-      0%   { transform: translateY(-2.5px); }
-      25%  { transform: translateY(0px); }
-      50%  { transform: translateY(2.5px); }
-      75%  { transform: translateY(0px); }
-      100% { transform: translateY(-2.5px); }
+      0%   { transform: translateY(-5px); }
+      50%  { transform: translateY(5px); }
+      100% { transform: translateY(-5px); }
     }
   </style>
 </head>
