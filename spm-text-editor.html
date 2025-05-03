@@ -34,7 +34,7 @@
     }
     .wave-letter {
       display: inline-block;
-      animation: wave 1.5s infinite;
+      animation: wave 1s ease-in-out infinite;
     }
     @keyframes shake {
       0%   { transform: translate(0, 0) rotate(0deg); }
@@ -45,10 +45,17 @@
       100% { transform: translate(0, 0) rotate(-1deg); }
     }
     @keyframes wave {
-      0%  { transform: translateY(-2.5px); }
-      33.3%  { transform: translateY(-2.5); }
-      66.7%  { transform: translateY(2.5px); }
-      100% { transform: translateY(2.5); }
+      0%   { transform: translateY(0); }
+      10%  { transform: translateY(-6px); }
+      20%  { transform: translateY(-10px); }
+      30%  { transform: translateY(-6px); }
+      40%  { transform: translateY(0); }
+      50%  { transform: translateY(6px); }
+      60%  { transform: translateY(10px); }
+      70%  { transform: translateY(6px); }
+      80%  { transform: translateY(0); }
+      90%  { transform: translateY(-4px); }
+      100% { transform: translateY(0); }
     }
   </style>
 </head>
@@ -62,7 +69,7 @@
 
     function wrapLettersWithClass(text, className) {
       return text.split('').map((char, i) => {
-        return `<span class=\"${className}\" style=\"animation-delay:${i * 50}ms\">${char.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>`;
+        return `<span class="${className}" style="animation-delay:${i * 50}ms">${char.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>`;
       }).join('');
     }
 
