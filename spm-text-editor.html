@@ -28,37 +28,55 @@
       border: 1px solid #ccc;
       white-space: pre-wrap;
     }
-    /* Animation for <shake> tag */
-    .shake {
+    .shake-letter {
       display: inline-block;
       animation: shake 0.3s infinite;
     }
-    @keyframes shake {
-      0%   { transform: translate(0,  0) rotate(0deg); }
-      20%  { transform: translate(-1px, -1px) rotate(-1deg); }
-      40%  { transform: translate(-1px,  1px) rotate(1deg); }
-      60%  { transform: translate(1px,  1px) rotate(0deg); }
-      80%  { transform: translate(1px, -1px) rotate(1deg); }
-      100% { transform: translate(0,  0) rotate(-1deg); }
+    .wave-letter {
+      display: inline-block;
+      animation: wave 1.5s infinite;
     }
-    /* Add styles for other custom tags here */
+    @keyframes shake {
+      0%   { transform: translate(0, 0) rotate(0deg); }
+      20%  { transform: translate(-1px, -1px) rotate(-1deg); }
+      40%  { transform: translate(-1px, 1px) rotate(1deg); }
+      60%  { transform: translate(1px, 1px) rotate(0deg); }
+      80%  { transform: translate(1px, -1px) rotate(1deg); }
+      100% { transform: translate(0, 0) rotate(-1deg); }
+    }
+    @keyframes wave {
+      0%   { transform: translateY(0); }
+      25%  { transform: translateY(-5px); }
+      50%  { transform: translateY(0); }
+      75%  { transform: translateY(5px); }
+      100% { transform: translateY(0); }
+    }
   </style>
 </head>
 <body>
   <h1>Super Paper Mario Text Preview</h1>
-  <textarea id="input" placeholder="Type your text with tags like <shake>...</shake>"></textarea>
+  <textarea id="input" placeholder="Type your text with tags like <shake>...</shake> or <wave>...</wave>"></textarea>
   <div id="output"></div>
   <script>
     const inputArea = document.getElementById('input');
     const outputDiv = document.getElementById('output');
 
+    function wrapLettersWithClass(text, className) {
+      return text.split('').map((char, i) => {
+        return `<span class=\"${className}\" style=\"animation-delay:${i * 50}ms\">${char.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>`;
+      }).join('');
+    }
+
     function parseCustomTags(text) {
-      // Handle <shake> tags
-      let parsed = text.replace(/<shake>([\s\S]*?)<\/shake>/g, (match, content) => {
-        return `<span class=\"shake\">${content.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</span>`;
+      // Handle <shake>
+      text = text.replace(/<shake>([\s\S]*?)<\/shake>/g, (match, content) => {
+        return wrapLettersWithClass(content, 'shake-letter');
       });
-      // TODO: add more replacements for other tags
-      return parsed;
+      // Handle <wave>
+      text = text.replace(/<wave>([\s\S]*?)<\/wave>/g, (match, content) => {
+        return wrapLettersWithClass(content, 'wave-letter');
+      });
+      return text;
     }
 
     function updatePreview() {
@@ -70,5 +88,4 @@
     updatePreview();
   </script>
 </body>
-</ht
-ml>
+</html>
