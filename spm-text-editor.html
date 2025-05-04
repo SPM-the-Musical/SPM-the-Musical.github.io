@@ -38,7 +38,7 @@
 </head>
 <body>
   <h1>Super Paper Mario Text Preview</h1>
-  <textarea id="input" placeholder="Preview formatting tags from Super Paper Mario! This editor supports <shake>, <wave>, <scale [size]>, <dynamic 3>, <wait [ms]>, <fairy>, and <col [hex]>."></textarea>
+  <textarea id="input" placeholder="Preview tags: <shake>, <wave>, <scale x>, <dynamic n>, <wait ms>, <fairy>, <col hex>."></textarea>
   <div id="output" title="Click to advance"></div>
   <script>
     const inputArea = document.getElementById('input');
@@ -49,120 +49,93 @@
     function createSpan(char, effects, scale, dyn, delay) {
       let node = document.createTextNode(char===' ' ? '\u00A0' : char);
       if (effects.includes('shake')) {
-        const s = document.createElement('span');
-        s.className = 'shake-letter';
-        s.style.animationDelay = delay + 'ms';
-        s.appendChild(node);
-        node = s;
+        const s = document.createElement('span'); s.className='shake-letter'; s.style.animationDelay=delay+'ms'; s.appendChild(node); node=s;
       }
       if (effects.includes('wave')) {
-        const w = document.createElement('span');
-        w.className = 'wave-letter';
-        w.style.animationDelay = delay + 'ms';
-        w.appendChild(node);
-        node = w;
+        const w = document.createElement('span'); w.className='wave-letter'; w.style.animationDelay=delay+'ms'; w.appendChild(node); node=w;
       }
-      if (scale !== 1) {
-        const sc = document.createElement('span');
-        sc.style.display = 'inline-block';
-        sc.style.fontSize = scale + 'em';
-        sc.appendChild(node);
-        node = sc;
+      if (scale!==1) {
+        const sc=document.createElement('span'); sc.style.display='inline-block'; sc.style.fontSize=scale+'em'; sc.appendChild(node); node=sc;
       }
-      if (dyn !== 1) {
-        const d = document.createElement('span');
-        d.className = 'dynamic-letter';
-        d.style.setProperty('--dyn-factor', dyn);
-        d.style.animationDelay = delay + 'ms';
-        d.appendChild(node);
-        node = d;
+      if (dyn!==1) {
+        const d=document.createElement('span'); d.className='dynamic-letter'; d.style.setProperty('--dyn-factor', dyn); d.style.animationDelay=delay+'ms'; d.appendChild(node); node=d;
       }
-      const f = document.createElement('span');
-      f.style.display = 'inline-block';
-      f.style.opacity = '0';
-      f.style.animation = `fadeIn 0s forwards ${delay}ms`;
-      f.appendChild(node);
-      return f;
+      const f=document.createElement('span'); f.style.display='inline-block'; f.style.opacity='0'; f.style.animation=`fadeIn 0s forwards ${delay}ms`; f.appendChild(node); return f;
     }
 
     function parseCustomTags(text) {
-      const frag = document.createDocumentFragment();
-      const stack = [];
-      let dCount = 0;
-      let i = 0;
-      while (i < text.length) {
-        const c = text[i];
-        if (c === '\n') {
-          frag.appendChild(document.createElement('br'));
-          i++; continue;
+      const frag=document.createDocumentFragment();
+      const stack=[]; let dCount=0; let i=0;
+      while(i<text.length) {
+        const c=text[i];
+        if(c==='\n'){frag.appendChild(document.createElement('br'));i++;continue;}
+        if(c==='<' ){
+          const open=text.slice(i).match(/^<\s*(shake|wave|scale|dynamic|wait|fairy|col)\s*([^>]*)>/i);
+          const close=text.slice(i).match(/^<\s*\/\s*(shake|wave|scale|dynamic|fairy|col)\s*>/i);
+          if(open){ const t=open[1].toLowerCase(),arg=open[2].trim();
+            if(t==='wait') dCount+=Math.ceil(parseFloat(arg)/25)||0;
+            else if(t==='col') stack.push({type:'col',value:arg});
+            else if(t==='scale'||t==='dynamic') stack.push({type:t,factor:parseFloat(arg)||1});
+            else stack.push({type:t}); i+=open[0].length; continue;
+          } else if(close){ const t=close[1].toLowerCase(); for(let j=stack.length-1;j>=0;j--) if(stack[j].type===t){stack.splice(j,1);break;} i+=close[0].length;continue; }
         }
-        if (c === '<') {
-          const open = text.slice(i).match(/^<\s*(shake|wave|scale|dynamic|wait|fairy|col)\s*([^>]*)>/i);
-          const close = text.slice(i).match(/^<\s*\/\s*(shake|wave|scale|dynamic|fairy|col)\s*>/i);
-          if (open) {
-            const tag = open[1].toLowerCase();
-            const arg = open[2].trim();
-            if (tag === 'wait') dCount += Math.ceil(parseFloat(arg) / 25) || 0;
-            else if (tag === 'col') stack.push({type: 'col', value: arg});
-            else if (tag === 'scale' || tag === 'dynamic') stack.push({type: tag, factor: parseFloat(arg) || 1});
-            else stack.push({type: tag});
-            i += open[0].length; continue;
-          } else if (close) {
-            const tag = close[1].toLowerCase();
-            for (let j = stack.length - 1; j >= 0; j--) {
-              if (stack[j].type === tag) { stack.splice(j, 1); break; }
-            }
-            i += close[0].length; continue;
-          }
-        }
-        const hasFairy = stack.some(e => e.type==='fairy');
-        const effects = stack.filter(e => ['shake','wave'].includes(e.type)).map(e => e.type);
-        const scale = stack.filter(e => e.type==='scale').reduce((s,e)=>s*e.factor,1);
-        const dyn = stack.filter(e => e.type==='dynamic').reduce((s,e)=>s*e.factor,1);
-        const colEntry = stack.find(e=>e.type==='col');
-        const color = colEntry ? '#' + colEntry.value : null;
-        const delay = dCount * 25;
-        let node = createSpan(c, effects, scale, dyn, delay);
-        if (color) {
-          const cs = document.createElement('span');
-          cs.style.color = color;
-          cs.appendChild(node);
-          node = cs;
-        }
-        if (hasFairy) stack; // fairy only affects border
-        frag.appendChild(node);
-        dCount++; i++;
+        const effects=stack.filter(e=>['shake','wave'].includes(e.type)).map(e=>e.type);
+        const scale=stack.filter(e=>e.type==='scale').reduce((s,e)=>s*e.factor,1);
+        const dyn=stack.filter(e=>e.type==='dynamic').reduce((s,e)=>s*e.factor,1);
+        const fairy=stack.some(e=>e.type==='fairy');
+        const delay=dCount*25;
+        let node=createSpan(c,effects,scale,dyn,delay);
+        const colE=stack.find(e=>e.type==='col'); if(colE){ const cs=document.createElement('span'); cs.style.color='#'+colE.value; cs.appendChild(node); node=cs; }
+        frag.appendChild(node); dCount++; i++;
       }
-      return {fragment: frag, fairy: stack.some(e=>e.type==='fairy')};
+      return {fragment:frag,fairy:stack.some(e=>e.type==='fairy')};
     }
 
-    function generatePages(text) {
-      const parts = text.split(/\n\s*\n(?=stg\d+_)/);
-      pages = []; fairyFlags = [];
-      parts.forEach(raw => {
-        const cleaned = raw.replace(/\bstg\d+_\b/gi,'');
-        const {fragment, fairy} = parseCustomTags(cleaned);
+
+
+    function showPage(idx) {
+      outputDiv.innerHTML='';
+      outputDiv.classList.toggle('fairy', fairyFlags[idx]);
+      outputDiv.appendChild(pages[idx].cloneNode(true));
+    }
+
+        // Split raw input into page-segments, detect fairy per segment, strip fairy tags, then parse
+    function updatePreview() {
+      const raw = inputArea.value;
+      // remove completely invalid tags first
+      const cleaned = raw.replace(/<\s*(?!\/?(?:shake|wave|scale|dynamic|wait|fairy|col)\b)[^>]+>/gi,'');
+      // split wherever an stg#_ marker begins
+      const rawParts = cleaned.split(/(?=stg\d+_)/i);
+
+      // rebuild pages + fairy flags
+      pages = [];
+      fairyFlags = [];
+      rawParts.forEach(part => {
+        // detect fairy tag in this segment
+        const hasFairy = /<\s*fairy\s*>/i.test(part);
+        fairyFlags.push(hasFairy);
+
+        // strip only the fairy tags from parsing
+        const partClean = part.replace(/<\s*\/?\s*fairy\s*>/gi,'');
+        const { fragment } = parseCustomTags(partClean);
         pages.push(fragment);
-        fairyFlags.push(fairy);
       });
+
+      // show first page
       currentPage = 0;
+      showPage(0);
     }
 
+    // showPage stays the same, toggles the fairy class per page index
     function showPage(idx) {
       outputDiv.innerHTML = '';
       outputDiv.classList.toggle('fairy', fairyFlags[idx]);
       outputDiv.appendChild(pages[idx].cloneNode(true));
     }
 
-    function updatePreview() {
-      generatePages(inputArea.value);
-      showPage(0);
-    }
 
-    inputArea.addEventListener('input', updatePreview);
-    outputDiv.addEventListener('click', () => {
-      if (currentPage < pages.length - 1) showPage(++currentPage);
-    });
+    inputArea.addEventListener('input',updatePreview);
+    outputDiv.addEventListener('click',()=>{ if(currentPage<pages.length-1) showPage(++currentPage); });
     updatePreview();
   </script>
 </body>
