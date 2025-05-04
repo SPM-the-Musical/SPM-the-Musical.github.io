@@ -1,141 +1,178 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SPM Text Preview</title>
-  <link rel="stylesheet" href="stylesheet.css">
+  <link rel="stylesheet" href="stylesheet.css" />
   <style>
     /* Custom font */
-    @font-face {
-      font-family: 'SPMText';
-      src: url('PopJoyStd-B.ttf') format('truetype');
-      font-weight: normal;
-      font-style: normal;
-    }
-    body, #output {
+    @font-face { font-family: 'SPMText'; src: url('PopJoyStd-B.ttf') format('truetype'); }
+    body {
       font-family: 'SPMText', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+      background: #f4f4f4;
     }
-    /* fade-in */
-    @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
-    @keyframes dynamicShrink { from {transform: scale(var(--dyn-factor));} to {transform: scale(1);} }
-    .shake-letter { display:inline-block; animation:shake 0.1s infinite; }
-    .wave-letter  { display:inline-block; animation:wave  0.9s infinite; }
-    .dynamic-letter { display:inline-block; transform: scale(var(--dyn-factor)); animation: dynamicShrink 0.05s forwards; }
-    /* Fairy border on output container */
-    .fairy {
-      border-color: hotpink;
+    textarea {
+      width: 80%;
+      height: 200px;
+      margin-bottom: 1rem;
+      font-family: monospace;
+      font-size: 1rem;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      resize: both;
+    }
+    textarea::placeholder {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    #output {
+      width: 80%;
+      background: white;
+      padding: 1rem;
+      border: 4px solid black;
+      white-space: pre-wrap;
+      cursor: pointer;
+      resize: both;
+      overflow: auto;
+      box-sizing: border-box;
+      color: inherit;
+    }
+    /* fairy overrides */
+    #output.fairy,
+    #output.fairy2 {
+      border: 6px solid hotpink;
       animation: rainbow 8s linear infinite;
     }
-    @keyframes shake { 0%{transform:translate(0,0)rotate(0)}20%{transform:translate(-0.5px,-0.5px)rotate(-1deg)}40%{transform:translate(-0.5px,0.5px)rotate(1deg)}60%{transform:translate(0.5px,0.5px)rotate(0)}80%{transform:translate(0.5px,-0.5px)rotate(1deg)}100%{transform:translate(0,0)rotate(-1deg)} }
-    @keyframes wave  { 0%{transform:translateY(-3px)}50%{transform:translateY(3px)}100%{transform:translateY(-3px)} }
-    @keyframes rainbow { 0%{border-color:hotpink}12.5%{border-color:orange}25%{border-color:yellow}37.5%{border-color:lawngreen}50%{border-color:cyan}62.5%{border-color:lawngreen}75%{border-color:yellow}87.5%{border-color:orange}100%{border-color:hotpink} }
-    /* layout */
-    body { display:flex; flex-direction:column; align-items:center; padding:2rem; background:#f4f4f4; }
-    textarea { width:80%; height:200px; margin-bottom:1rem; font-family:monospace; font-size:1rem; white-space:pre-wrap; word-wrap:break-word; resize:both; }
-    #output { width:80%; background:white; padding:1rem; border:4px solid black; white-space:pre-wrap; cursor:pointer; resize:both; overflow:auto; box-sizing:border-box; }
+    /* kanban override */
+    #output.kanban {
+      border: 6px solid brown;
+    }
+    /* system override */
+    #output.system {
+      background: darkblue;
+      border: 4px solid gray;
+      color: white;
+    }
+    /* animations */
+    @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
+    @keyframes dynamicShrink { from {transform: scale(var(--dyn-factor));} to {transform: scale(1);} }
+    @keyframes shake {0%{transform:translate(0,0)rotate(0)}20%{transform:translate(-0.5px,-0.5px)rotate(-1deg)}40%{transform:translate(-0.5px,0.5px)rotate(1deg)}60%{transform:translate(0.5px,0.5px)rotate(0)}80%{transform:translate(0.5px,-0.5px)rotate(1deg)}100%{transform:translate(0,0)rotate(-1deg)}}
+    @keyframes wave {0%{transform:translateY(-3px)}50%{transform:translateY(3px)}100%{transform:translateY(-3px)}}
+    @keyframes rainbow {0%{border-color:hotpink}12.5%{border-color:orange}25%{border-color:yellow}37.5%{border-color:lawngreen}50%{border-color:cyan}62.5%{border-color:lawngreen}75%{border-color:yellow}87.5%{border-color:orange}100%{border-color:hotpink}}
+    .shake-letter { display: inline-block; animation: shake 0.1s infinite; }
+    .wave-letter { display: inline-block; animation: wave 0.9s infinite; }
+    .dynamic-letter { display: inline-block; transform: scale(var(--dyn-factor)); animation: dynamicShrink 0.05s forwards; }
   </style>
 </head>
 <body>
   <h1>Super Paper Mario Text Preview</h1>
-  <textarea id="input" placeholder="Preview tags: <shake>, <wave>, <scale x>, <dynamic n>, <wait ms>, <fairy>, <col hex>."></textarea>
+  <textarea id="input" placeholder="Use tags from Super Paper Mario's text files! This editor supports <shake>, <wave>, <scale [size]>, <dynamic 3>, <wait [ms]>, <fairy>, <fairy2>, <kanban>, <system>, and <col [hex]>."></textarea>
   <div id="output" title="Click to advance"></div>
   <script>
     const inputArea = document.getElementById('input');
     const outputDiv = document.getElementById('output');
-    let pages = [], fairyFlags = [];
+    let pages = [], fairyFlags = [], kanbanFlags = [], systemFlags = [];
     let currentPage = 0;
 
-    function createSpan(char, effects, scale, dyn, delay) {
-      let node = document.createTextNode(char===' ' ? '\u00A0' : char);
+    function createSpan(c, effects, scale, dyn, delay) {
+      let node = document.createTextNode(c === ' ' ? '\u00A0' : c);
       if (effects.includes('shake')) {
-        const s = document.createElement('span'); s.className='shake-letter'; s.style.animationDelay=delay+'ms'; s.appendChild(node); node=s;
+        const s = document.createElement('span'); s.className = 'shake-letter'; s.style.animationDelay = delay + 'ms'; s.appendChild(node); node = s;
       }
       if (effects.includes('wave')) {
-        const w = document.createElement('span'); w.className='wave-letter'; w.style.animationDelay=delay+'ms'; w.appendChild(node); node=w;
+        const w = document.createElement('span'); w.className = 'wave-letter'; w.style.animationDelay = delay + 'ms'; w.appendChild(node); node = w;
       }
-      if (scale!==1) {
-        const sc=document.createElement('span'); sc.style.display='inline-block'; sc.style.fontSize=scale+'em'; sc.appendChild(node); node=sc;
+      if (scale !== 1) {
+        const sc = document.createElement('span'); sc.style.display = 'inline-block'; sc.style.fontSize = scale + 'em'; sc.appendChild(node); node = sc;
       }
-      if (dyn!==1) {
-        const d=document.createElement('span'); d.className='dynamic-letter'; d.style.setProperty('--dyn-factor', dyn); d.style.animationDelay=delay+'ms'; d.appendChild(node); node=d;
+      if (dyn !== 1) {
+        const d = document.createElement('span'); d.className = 'dynamic-letter'; d.style.setProperty('--dyn-factor', dyn); d.style.animationDelay = delay + 'ms'; d.appendChild(node); node = d;
       }
-      const f=document.createElement('span'); f.style.display='inline-block'; f.style.opacity='0'; f.style.animation=`fadeIn 0s forwards ${delay}ms`; f.appendChild(node); return f;
+      const f = document.createElement('span'); f.style.display = 'inline-block'; f.style.opacity = '0'; f.style.animation = `fadeIn 0s forwards ${delay}ms`; f.appendChild(node); return f;
     }
 
     function parseCustomTags(text) {
-      const frag=document.createDocumentFragment();
-      const stack=[]; let dCount=0; let i=0;
-      while(i<text.length) {
-        const c=text[i];
-        if(c==='\n'){frag.appendChild(document.createElement('br'));i++;continue;}
-        if(c==='<' ){
-          const open=text.slice(i).match(/^<\s*(shake|wave|scale|dynamic|wait|fairy|col)\s*([^>]*)>/i);
-          const close=text.slice(i).match(/^<\s*\/\s*(shake|wave|scale|dynamic|fairy|col)\s*>/i);
-          if(open){ const t=open[1].toLowerCase(),arg=open[2].trim();
-            if(t==='wait') dCount+=Math.ceil(parseFloat(arg)/25)||0;
-            else if(t==='col') stack.push({type:'col',value:arg});
-            else if(t==='scale'||t==='dynamic') stack.push({type:t,factor:parseFloat(arg)||1});
-            else stack.push({type:t}); i+=open[0].length; continue;
-          } else if(close){ const t=close[1].toLowerCase(); for(let j=stack.length-1;j>=0;j--) if(stack[j].type===t){stack.splice(j,1);break;} i+=close[0].length;continue; }
+      const frag = document.createDocumentFragment();
+      const stack = [];
+      let dCount = 0;
+      let i = 0;
+      while (i < text.length) {
+        const ch = text[i];
+        if (ch === '\n') { frag.appendChild(document.createElement('br')); i++; continue; }
+        if (ch === '<') {
+          const open = text.slice(i).match(/^<\s*(shake|wave|scale|dynamic|wait|fairy2|fairy|kanban|system|col)\s*([^>]*)>/i);
+          const close = text.slice(i).match(/^<\s*\/\s*(shake|wave|scale|dynamic|fairy2|fairy|kanban|system|col)\s*>/i);
+          if (open) {
+            const tag = open[1].toLowerCase(), arg = open[2].trim();
+            if (tag === 'wait') {
+              dCount += Math.ceil(parseFloat(arg) / 25) || 0;
+            } else {
+              stack.push({ type: tag, factor: tag === 'scale' || tag === 'dynamic' ? parseFloat(arg) || 1 : undefined, value: tag === 'col' ? arg : undefined });
+            }
+            i += open[0].length;
+            continue;
+          }
+          if (close) {
+            const tag = close[1].toLowerCase();
+            for (let j = stack.length - 1; j >= 0; j--) {
+              if (stack[j].type === tag) { stack.splice(j, 1); break; }
+            }
+            i += close[0].length;
+            continue;
+          }
         }
-        const effects=stack.filter(e=>['shake','wave'].includes(e.type)).map(e=>e.type);
-        const scale=stack.filter(e=>e.type==='scale').reduce((s,e)=>s*e.factor,1);
-        const dyn=stack.filter(e=>e.type==='dynamic').reduce((s,e)=>s*e.factor,1);
-        const fairy=stack.some(e=>e.type==='fairy');
-        const delay=dCount*25;
-        let node=createSpan(c,effects,scale,dyn,delay);
-        const colE=stack.find(e=>e.type==='col'); if(colE){ const cs=document.createElement('span'); cs.style.color='#'+colE.value; cs.appendChild(node); node=cs; }
-        frag.appendChild(node); dCount++; i++;
+        const effects = stack.filter(e => ['shake', 'wave'].includes(e.type)).map(e => e.type);
+        const scale = stack.filter(e => e.type === 'scale').reduce((s, e) => s * e.factor, 1);
+        const dyn = stack.filter(e => e.type === 'dynamic').reduce((s, e) => s * e.factor, 1);
+        const inSystem = stack.some(e => e.type === 'system');
+        const colorTag = stack.find(e => e.type === 'col');
+        const delay = dCount * 25;
+
+        let node = createSpan(ch, effects, scale, dyn, delay);
+        if (colorTag) {
+          const colSpan = document.createElement('span'); colSpan.style.color = '#' + colorTag.value; colSpan.appendChild(node); node = colSpan;
+        }
+        frag.appendChild(node);
+        dCount++; i++;
       }
-      return {fragment:frag,fairy:stack.some(e=>e.type==='fairy')};
+      return frag;
     }
 
-
-
-    function showPage(idx) {
-      outputDiv.innerHTML='';
-      outputDiv.classList.toggle('fairy', fairyFlags[idx]);
-      outputDiv.appendChild(pages[idx].cloneNode(true));
-    }
-
-        // Split raw input into page-segments, detect fairy per segment, strip fairy tags, then parse
     function updatePreview() {
       const raw = inputArea.value;
-      // remove completely invalid tags first
-      const cleaned = raw.replace(/<\s*(?!\/?(?:shake|wave|scale|dynamic|wait|fairy|col)\b)[^>]+>/gi,'');
-      // split wherever an stg#_ marker begins
-      const rawParts = cleaned.split(/(?=stg\d+_)/i);
-
-      // rebuild pages + fairy flags
-      pages = [];
-      fairyFlags = [];
-      rawParts.forEach(part => {
-        // detect fairy tag in this segment
-        const hasFairy = /<\s*fairy\s*>/i.test(part);
-        fairyFlags.push(hasFairy);
-
-        // strip only the fairy tags from parsing
-        const partClean = part.replace(/<\s*\/?\s*fairy\s*>/gi,'');
-        const { fragment } = parseCustomTags(partClean);
-        pages.push(fragment);
-      });
-
-      // show first page
+      const cleaned = raw.replace(/<\s*(?!\/?(?:shake|wave|scale|dynamic|wait|fairy|fairy2|kanban|system|col)\b)[^>]+>/gi, '');
+      const rawParts = cleaned.split(/(?=\b\w+_\w+\b)/);
+      pages = []; fairyFlags = []; kanbanFlags = []; systemFlags = [];
       currentPage = 0;
+
+      rawParts.forEach(part => {
+        fairyFlags.push(/<\s*(?:fairy|fairy2)\s*>/i.test(part));
+        kanbanFlags.push(/<\s*kanban\s*>/i.test(part));
+        systemFlags.push(/<\s*system\s*>/i.test(part));
+
+        let partClean = part.replace(/<\s*\/\s*(?:fairy2?|kanban|system)\s*>/gi, '').replace(/<\s*(?:fairy2?|kanban|system)\s*>/gi, '');
+        const frag = parseCustomTags(partClean);
+        pages.push(frag);
+      });
       showPage(0);
     }
 
-    // showPage stays the same, toggles the fairy class per page index
     function showPage(idx) {
       outputDiv.innerHTML = '';
-      outputDiv.classList.toggle('fairy', fairyFlags[idx]);
-      outputDiv.appendChild(pages[idx].cloneNode(true));
+      outputDiv.className = '';
+      if (fairyFlags[idx]) outputDiv.classList.add('fairy');
+      if (kanbanFlags[idx]) outputDiv.classList.add('kanban');
+      if (systemFlags[idx]) outputDiv.classList.add('system');
+      outputDiv.appendChild(pages[idx]);
     }
 
-
-    inputArea.addEventListener('input',updatePreview);
-    outputDiv.addEventListener('click',()=>{ if(currentPage<pages.length-1) showPage(++currentPage); });
+    inputArea.addEventListener('input', updatePreview);
+    outputDiv.addEventListener('click', () => { if (currentPage < pages.length - 1) showPage(++currentPage); });
     updatePreview();
   </script>
 </body>
