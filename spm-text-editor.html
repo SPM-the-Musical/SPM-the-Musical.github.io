@@ -1,86 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SPM Text Preview</title>
-  <link rel="stylesheet" href="stylesheet.css" />
+  <link rel="stylesheet" href="stylesheet.css">
   <style>
-    /* Custom font */
-    @font-face { font-family: 'SPMText'; src: url('PopJoyStd-B.ttf') format('truetype'); }
-    body {
+    @font-face {
+      font-family: 'SPMText';
+      src: url('PopJoyStd-B.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+    body, #output {
       font-family: 'SPMText', sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 2rem;
-      background: #f4f4f4;
     }
-    textarea {
-      width: 80%;
-      height: 200px;
-      margin-bottom: 1rem;
-      font-family: monospace;
-      font-size: 1rem;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-      resize: both;
-    }
-    textarea::placeholder {
-      white-space: pre-wrap;
-      word-wrap: break-word;
-    }
-    #output {
-      width: 80%;
-      background: white;
-      padding: 1rem;
-      border: 4px solid black;
-      white-space: pre-wrap;
-      cursor: pointer;
-      resize: both;
-      overflow: auto;
-      box-sizing: border-box;
-      color: inherit;
-    }
-    /* fairy overrides */
-    #output.fairy,
-    #output.fairy2 {
-      border: 6px solid hotpink;
-      animation: rainbow 8s linear infinite;
-    }
-    /* kanban override */
-    #output.kanban {
-      border: 6px solid brown;
-    }
-    /* system override */
-    #output.system {
-      background: darkblue;
-      border: 4px solid gray;
-      color: white;
-    }
-    /* animations */
-    @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
+    @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
     @keyframes dynamicShrink { from {transform: scale(var(--dyn-factor));} to {transform: scale(1);} }
-    @keyframes shake {0%{transform:translate(0,0)rotate(0)}20%{transform:translate(-0.5px,-0.5px)rotate(-1deg)}40%{transform:translate(-0.5px,0.5px)rotate(1deg)}60%{transform:translate(0.5px,0.5px)rotate(0)}80%{transform:translate(0.5px,-0.5px)rotate(1deg)}100%{transform:translate(0,0)rotate(-1deg)}}
-    @keyframes wave {0%{transform:translateY(-3px)}50%{transform:translateY(3px)}100%{transform:translateY(-3px)}}
-    @keyframes rainbow {0%{border-color:hotpink}12.5%{border-color:orange}25%{border-color:yellow}37.5%{border-color:lawngreen}50%{border-color:cyan}62.5%{border-color:lawngreen}75%{border-color:yellow}87.5%{border-color:orange}100%{border-color:hotpink}}
-    .shake-letter { display: inline-block; animation: shake 0.1s infinite; }
-    .wave-letter { display: inline-block; animation: wave 0.9s infinite; }
-    .dynamic-letter { display: inline-block; transform: scale(var(--dyn-factor)); animation: dynamicShrink 0.05s forwards; }
+    .shake-letter { display:inline-block; animation:shake 0.1s infinite; }
+    .wave-letter  { display:inline-block; animation:wave  0.9s infinite; }
+    .dynamic-letter { display:inline-block; transform: scale(var(--dyn-factor)); animation: dynamicShrink 0.05s forwards; }
+    /* Page border styles */
+    .fairy-border { border:4px solid; animation: rainbow 8s linear infinite; }
+    #output.kanban-border { border:4px solid brown; }
+    #output.system-style { background: darkblue; border:4px solid gray; color: white; }
+    @keyframes shake { 0%{transform:translate(0,0)rotate(0)}20%{transform:translate(-0.5px,-0.5px)rotate(-1deg)}40%{transform:translate(-0.5px,0.5px)rotate(1deg)}60%{transform:translate(0.5px,0.5px)rotate(0)}80%{transform:translate(0.5px,-0.5px)rotate(1deg)}100%{transform:translate(0,0)rotate(-1deg)} }
+    @keyframes wave  { 0%{transform:translateY(-3px)}50%{transform:translateY(3px)}100%{transform:translateY(-3px)} }
+    @keyframes rainbow { 0%{border-color:hotpink}12.5%{border-color:orange}25%{border-color:yellow}37.5%{border-color:lawngreen}50%{border-color:cyan}62.5%{border-color:lawngreen}75%{border-color:yellow}87.5%{border-color:orange}100%{border-color:hotpink} }
+    body { display:flex; flex-direction:column; align-items:center; padding:2rem; background:#f4f4f4; }
+    textarea { width:80%; height:200px; margin-bottom:1rem; font-family:monospace; font-size:1rem; white-space:pre-wrap; word-wrap:break-word; resize:both; }
+    #output { width:80%; background:white; padding:1rem; white-space:pre-wrap; cursor:pointer; resize:both; overflow:auto; box-sizing:border-box; border:4px solid black; }
   </style>
 </head>
 <body>
   <h1>Super Paper Mario Text Preview</h1>
-  <textarea id="input" placeholder="Use tags from Super Paper Mario's text files! This editor supports <shake>, <wave>, <scale [size]>, <dynamic 3>, <wait [ms]>, <fairy>, <fairy2>, <kanban>, <system>, and <col [hex]>."></textarea>
+  <textarea id="input" placeholder="Use tags from Super Paper Mario's text files! This editor supports <shake>, <wave>, <scale [size]>, <dynamic 3>, <wait [ms]>, <fairy>, <fairy2>, <kanban>, <system>, <icon [button]>, and <col [hex]>."></textarea>
   <div id="output" title="Click to advance"></div>
   <script>
     const inputArea = document.getElementById('input');
     const outputDiv = document.getElementById('output');
-    let pages = [], fairyFlags = [], kanbanFlags = [], systemFlags = [];
-    let currentPage = 0;
+    let pages = [], fairyFlags = [], kanbanFlags = [], systemFlags = [], currentPage = 0;
 
-    function createSpan(c, effects, scale, dyn, delay) {
-      let node = document.createTextNode(c === ' ' ? '\u00A0' : c);
+    function createSpan(char, effects, scale, dyn, delay) {
+      let node = document.createTextNode(char === ' ' ? '\u00A0' : char);
       if (effects.includes('shake')) {
         const s = document.createElement('span'); s.className = 'shake-letter'; s.style.animationDelay = delay + 'ms'; s.appendChild(node); node = s;
       }
@@ -93,86 +55,106 @@
       if (dyn !== 1) {
         const d = document.createElement('span'); d.className = 'dynamic-letter'; d.style.setProperty('--dyn-factor', dyn); d.style.animationDelay = delay + 'ms'; d.appendChild(node); node = d;
       }
-      const f = document.createElement('span'); f.style.display = 'inline-block'; f.style.opacity = '0'; f.style.animation = `fadeIn 0s forwards ${delay}ms`; f.appendChild(node); return f;
+      const f = document.createElement('span');
+      f.style.display = 'inline-block';
+      f.style.opacity = '0';
+      f.style.animation = `fadeIn 0s forwards ${delay}ms`;
+      f.appendChild(node);
+      return f;
     }
 
     function parseCustomTags(text) {
       const frag = document.createDocumentFragment();
       const stack = [];
-      let dCount = 0;
-      let i = 0;
+      let dCount = 0, i = 0;
+      let hasFairy = false, hasKanban = false, hasSystem = false;
+
       while (i < text.length) {
-        const ch = text[i];
-        if (ch === '\n') { frag.appendChild(document.createElement('br')); i++; continue; }
-        if (ch === '<') {
-          const open = text.slice(i).match(/^<\s*(shake|wave|scale|dynamic|wait|fairy2|fairy|kanban|system|col)\s*([^>]*)>/i);
-          const close = text.slice(i).match(/^<\s*\/\s*(shake|wave|scale|dynamic|fairy2|fairy|kanban|system|col)\s*>/i);
+        const c = text[i];
+        if (c === '\n') { frag.appendChild(document.createElement('br')); i++; continue; }
+        if (c === '<') {
+          // Icon
+          const iconMatch = text.slice(i).match(/^<\s*icon\s+([^\s>]+)[^>]*>/i);
+          if (iconMatch) {
+            const arg = iconMatch[1];
+            let ch = arg.startsWith('PAD_') ? arg.slice(4,5) : arg;
+            frag.appendChild(createSpan(ch,
+              stack.filter(e=>['shake','wave'].includes(e.type)).map(e=>e.type),
+              stack.filter(e=>e.type==='scale').reduce((s,e)=>s*e.factor,1),
+              stack.filter(e=>e.type==='dynamic').reduce((s,e)=>s*e.factor,1),
+              dCount*25));
+            dCount++; i+=iconMatch[0].length; continue;
+          }
+          // Other opens/closes
+          const open = text.slice(i).match(/^<\s*(shake|wave|scale|dynamic|wait|fairy|kanban|system|col)\s*([^>]*)>/i);
+          const close= text.slice(i).match(/^<\s*\/\s*(shake|wave|scale|dynamic|fairy|kanban|system|col)\s*>/i);
           if (open) {
             const tag = open[1].toLowerCase(), arg = open[2].trim();
-            if (tag === 'wait') {
-              dCount += Math.ceil(parseFloat(arg) / 25) || 0;
-            } else {
-              stack.push({ type: tag, factor: tag === 'scale' || tag === 'dynamic' ? parseFloat(arg) || 1 : undefined, value: tag === 'col' ? arg : undefined });
-            }
-            i += open[0].length;
-            continue;
-          }
-          if (close) {
-            const tag = close[1].toLowerCase();
-            for (let j = stack.length - 1; j >= 0; j--) {
-              if (stack[j].type === tag) { stack.splice(j, 1); break; }
-            }
-            i += close[0].length;
-            continue;
+            if (tag==='wait') dCount+=Math.ceil(parseFloat(arg)/25)||0;
+            else if(tag==='col') stack.push({type:'col',value:arg});
+            else if(tag==='scale'||tag==='dynamic') stack.push({type:tag,factor:parseFloat(arg)||1});
+            else if(tag==='fairy') hasFairy=true;
+            else if(tag==='kanban') hasKanban=true;
+            else if(tag==='system') hasSystem=true;
+            else stack.push({type:tag});
+            i+=open[0].length; continue;
+          } else if(close) {
+            const tag=close[1].toLowerCase();
+            if(tag==='fairy') hasFairy=false;
+            if(tag==='kanban') hasKanban=false;
+            if(tag==='system') hasSystem=false;
+            for(let j=stack.length-1;j>=0;j--) if(stack[j].type===tag){stack.splice(j,1);break;}
+            i+=close[0].length; continue;
+          } else {
+            const unk=text.slice(i).match(/^<[^>]+>/);
+            if(unk){i+=unk[0].length;continue;}
           }
         }
-        const effects = stack.filter(e => ['shake', 'wave'].includes(e.type)).map(e => e.type);
-        const scale = stack.filter(e => e.type === 'scale').reduce((s, e) => s * e.factor, 1);
-        const dyn = stack.filter(e => e.type === 'dynamic').reduce((s, e) => s * e.factor, 1);
-        const inSystem = stack.some(e => e.type === 'system');
-        const colorTag = stack.find(e => e.type === 'col');
-        const delay = dCount * 25;
-
-        let node = createSpan(ch, effects, scale, dyn, delay);
-        if (colorTag) {
-          const colSpan = document.createElement('span'); colSpan.style.color = '#' + colorTag.value; colSpan.appendChild(node); node = colSpan;
-        }
+        const effects=stack.filter(e=>['shake','wave'].includes(e.type)).map(e=>e.type);
+        const scale=stack.filter(e=>e.type==='scale').reduce((s,e)=>s*e.factor,1);
+        const dyn=stack.filter(e=>e.type==='dynamic').reduce((s,e)=>s*e.factor,1);
+        const colEntry=stack.find(e=>e.type==='col');
+        const color=colEntry?'#'+colEntry.value:null;
+        const delay=dCount*25;
+        let node=createSpan(c,effects,scale,dyn,delay);
+        if(color){const cs=document.createElement('span');cs.style.color=color;cs.appendChild(node);node=cs;}
         frag.appendChild(node);
         dCount++; i++;
       }
-      return frag;
+      return {fragment:frag,fairy:hasFairy,kanban:hasKanban,system:hasSystem};
     }
 
-    function updatePreview() {
-      const raw = inputArea.value;
-      const cleaned = raw.replace(/<\s*(?!\/?(?:shake|wave|scale|dynamic|wait|fairy|fairy2|kanban|system|col)\b)[^>]+>/gi, '');
-      const rawParts = cleaned.split(/(?=\b\w+_\w+\b)/);
-      pages = []; fairyFlags = []; kanbanFlags = []; systemFlags = [];
-      currentPage = 0;
-
-      rawParts.forEach(part => {
-        fairyFlags.push(/<\s*(?:fairy|fairy2)\s*>/i.test(part));
-        kanbanFlags.push(/<\s*kanban\s*>/i.test(part));
-        systemFlags.push(/<\s*system\s*>/i.test(part));
-
-        let partClean = part.replace(/<\s*\/\s*(?:fairy2?|kanban|system)\s*>/gi, '').replace(/<\s*(?:fairy2?|kanban|system)\s*>/gi, '');
-        const frag = parseCustomTags(partClean);
-        pages.push(frag);
+    function generatePages(text) {
+      const parts = text.split(/(?=(?!PAD_)\b\w*_\w*\b)/);
+      pages=[]; fairyFlags=[]; kanbanFlags=[]; systemFlags=[];
+      parts.forEach(raw=>{
+        const segment=raw.trim();
+        const {fragment,fairy,kanban,system}=parseCustomTags(segment);
+        pages.push(fragment);
+        fairyFlags.push(fairy);
+        kanbanFlags.push(kanban);
+        systemFlags.push(system);
       });
-      showPage(0);
+      currentPage=0;
     }
 
     function showPage(idx) {
-      outputDiv.innerHTML = '';
-      outputDiv.className = '';
-      if (fairyFlags[idx]) outputDiv.classList.add('fairy');
-      if (kanbanFlags[idx]) outputDiv.classList.add('kanban');
-      if (systemFlags[idx]) outputDiv.classList.add('system');
-      outputDiv.appendChild(pages[idx]);
+      if(!pages[idx]) return;
+      outputDiv.innerHTML='';
+      outputDiv.className='';
+      if(fairyFlags[idx]) outputDiv.classList.add('fairy-border');
+      if(kanbanFlags[idx]) outputDiv.classList.add('kanban-border');
+      if(systemFlags[idx]) outputDiv.classList.add('system-style');
+      outputDiv.appendChild(pages[idx].cloneNode(true));
     }
 
-    inputArea.addEventListener('input', updatePreview);
-    outputDiv.addEventListener('click', () => { if (currentPage < pages.length - 1) showPage(++currentPage); });
+    function updatePreview() {
+      generatePages(inputArea.value);
+      showPage(0);
+    }
+
+    inputArea.addEventListener('input',updatePreview);
+    outputDiv.addEventListener('click',()=>{if(currentPage<pages.length-1)showPage(++currentPage);});
     updatePreview();
   </script>
 </body>
