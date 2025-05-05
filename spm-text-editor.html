@@ -21,7 +21,7 @@
     .wave-letter  { display:inline-block; animation:wave 0.7s linear infinite; transform-origin:center; } animation:wave  0.9s infinite; }
     .dynamic-letter { display:inline-block; transform: scale(var(--dyn-factor)); animation: dynamicShrink 0.05s forwards; }
     /* Page border/style classes */
-    .fairy-border { border:4px solid; animation: rainbow 8s linear infinite; }
+    #output.fairy-border { border:4px solid; animation: rainbow 8s linear infinite; }
     #output.kanban-border { border:4px solid brown; }
     #output.system-style  { background: darkblue; border:4px solid gray; color: white; }
     #output.diary-style   { background: lightgoldenrodyellow; }
@@ -30,6 +30,7 @@
       from { transform: rotate(0deg) translateX(2.5px) rotate(0deg); }
       to   { transform: rotate(360deg) translateX(2.5px) rotate(-360deg); }
     }
+    @keyframes rainbow { 0%{border-color:hotpink}12.5%{border-color:orange}25%{border-color:yellow}37.5%{border-color:lawngreen}50%{border-color:cyan}62.5%{border-color:lawngreen}75%{border-color:yellow}87.5%{border-color:orange}100%{border-color:hotpink} }
 
     body { display:flex; flex-direction:column; align-items:center; padding:2rem; background:#f4f4f4; }
     textarea { width:80%; height:200px; margin-bottom:1rem; font-family:monospace; font-size:1rem; white-space:pre-wrap; word-wrap:break-word; resize:both; }
