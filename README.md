@@ -14,10 +14,10 @@ Nutshell.setOptions({
 </p>
 
 # Welcome to the unofficial website for Super Paper Mario the Musical!
-Latest video: [:O'Chunks Battle](https://youtu.be/KmyLWJlAK-Q)
+Latest video: [:Bowser Battle](https://youtu.be/yaYPcYaXIPQ)
 
 # What is Super Paper Mario the Musical?
-Super Paper Mario the Musical is a YouTube series created by Game Rec Room, a talented group of artists, lyricists, and singers. It is a full lyrical adaptation of [:Super Paper Mario](https://en.m.wikipedia.org/wiki/Super_Paper_Mario), with 14 songs currently released and 36 more planned!
+Super Paper Mario the Musical is a YouTube series created by Game Rec Room, a talented group of artists, lyricists, and singers. It is a full lyrical adaptation of [:Super Paper Mario](https://en.m.wikipedia.org/wiki/Super_Paper_Mario), with 15 songs currently released and 35 more planned!
 
 # Can I help?
 The answer depends on what exactly you want to help with. To find out, you should DM @Coolskeleton95. on Discord, or join the [Game Rec Room Discord server](https://discord.com/invite/G3sxEaBPJR) and ask him there!
