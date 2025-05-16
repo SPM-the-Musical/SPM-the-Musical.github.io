@@ -8,241 +8,148 @@
   <link rel="stylesheet" href="stylesheet.css">
   <style>
     /* Font */
-    @font-face {
-      font-family: 'SPMText';
-      src: url('PopJoyStd-B.ttf') format('truetype');
-      font-weight: normal;
-      font-style: normal;
-    }
+    @font-face { font-family: 'SPMText'; src: url('PopJoyStd-B.ttf') format('truetype'); }
 
     /* Base styles */
-    body, #output {
-      font-family: 'SPMText', sans-serif;
-    }
-    body {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 2rem;
-      background: #f4f4f4;
-    }
-    textarea {
-      width: 80%;
-      height: 200px;
-      margin-bottom: 1rem;
-      font-family: monospace;
-      font-size: 1rem;
-      white-space: pre-wrap;
-      word-wrap: break-word;
-      resize: both;
-    }
-    #output {
-      width: 80%;
-      background: white;
-      padding: 1rem;
-      white-space: pre-wrap;
-      cursor: pointer;
-      resize: both;
-      overflow: auto;
-      box-sizing: border-box;
-      border: 4px solid black;
-    }
+    body, #output { font-family: 'SPMText', sans-serif; }
+    body { display: flex; flex-direction: column; align-items: center; padding: 2rem; background: #f4f4f4; }
+    textarea { width: 80%; height: 200px; margin-bottom: 1rem; font-family: monospace; font-size: 1rem; white-space: pre-wrap; word-wrap: break-word; resize: both; }
+    #output { width: 80%; background: white; padding: 1rem; white-space: pre-wrap; cursor: pointer; resize: both; overflow: auto; box-sizing: border-box; border: 4px solid black; }
 
     /* Animations */
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to   { opacity: 1; }
-    }
-    @keyframes dynamicShrink {
-      from { transform: scale(var(--dyn-factor)); }
-      to   { transform: scale(1); }
-    }
-    @keyframes shake {
-      0%   { transform: translate(0, 0) rotate(0); }
-      20%  { transform: translate(-0.5px, -0.5px) rotate(-1deg); }
-      40%  { transform: translate(-0.5px, 0.5px) rotate(1deg); }
-      60%  { transform: translate(0.5px, 0.5px) rotate(0); }
-      80%  { transform: translate(0.5px, -0.5px) rotate(1deg); }
-      100% { transform: translate(0, 0) rotate(-1deg); }
-    }
+    @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+    @keyframes dynamicShrink { from { transform: scale(var(--dyn-factor)); } to { transform: scale(1); } }
+    @keyframes shake { 0%{transform:translate(0,0)rotate(0);}20%{transform:translate(-0.5px,-0.5px)rotate(-1deg);}40%{transform:translate(-0.5px,0.5px)rotate(1deg);}60%{transform:translate(0.5px,0.5px)rotate(0);}80%{transform:translate(0.5px,-0.5px)rotate(1deg);}100%{transform:translate(0,0)rotate(-1deg);} }
     @keyframes wave {
-      from { transform: rotate(0deg) translateX(2.5px) rotate(0deg); }
-      to   { transform: rotate(360deg) translateX(2.5px) rotate(-360deg); }
-    }
-    @keyframes rainbow {
-      0%    { border-color: hotpink; }
-      12.5% { border-color: orange; }
-      25%   { border-color: yellow; }
-      37.5% { border-color: lawngreen; }
-      50%   { border-color: cyan; }
-      62.5% { border-color: lawngreen; }
-      75%   { border-color: yellow; }
-      87.5% { border-color: orange; }
-      100%  { border-color: hotpink; }
-    }
-
+      from { transform: rotate(0deg) translateX(2px) rotate(0deg); }
+      to   { transform: rotate(360deg) translateX(2px) rotate(-360deg); }
+    }to{transform:translateY(3px);} }
+    @keyframes rainbow { 0%{border-color:hotpink;}12.5%{border-color:orange;}25%{border-color:yellow;}37.5%{border-color:lawngreen;}50%{border-color:cyan;}62.5%{border-color:lawngreen;}75%{border-color:yellow;}87.5%{border-color:orange;}100%{border-color:hotpink;} }
     /* Letter effects */
-    .shake-letter {
-      display: inline-block;
-      animation: shake 0.1s infinite;
-    }
-    .wave-letter {
-      display: inline-block;
-      animation: wave 0.9s linear infinite;
-      transform-origin: center;
-    }
-    .dynamic-letter {
-      display: inline-block;
-      transform: scale(var(--dyn-factor));
-      animation: dynamicShrink 0.05s forwards;
-    }
+    .shake-letter { display:inline-block; animation: shake 0.1s infinite; }
+    .wave-letter { display:inline-block; animation: wave 0.9s linear infinite; transform-origin: center; }
+    .dynamic-letter { display:inline-block; transform: scale(var(--dyn-factor)); animation: dynamicShrink 0.05s forwards; }
 
     /* Page container styles */
-    #output.fairy-border {
-      border: 4px solid;
-      animation: rainbow 8s linear infinite;
-    }
-    #output.kanban-border {
-      border: 4px solid brown;
-    }
-    #output.system-style {
-      background: darkblue;
-      border: 4px solid gray;
-      color: white;
-    }
-    #output.diary-style {
-      background: lightgoldenrodyellow;
-    }
-    #output.clear-style {
-      background: black;
-      color: white;
-    }
+    #output.fairy-border { border:4px solid; animation: rainbow 8s linear infinite; }
+    #output.kanban-border { border:4px solid brown; }
+    #output.system-style { background: darkblue; border:4px solid gray; color:white; }
+    #output.diary-style { background: lightgoldenrodyellow; }
+    #output.clear-style { background: black; color: white; }
+    #output.majo-style { background: purple; color: white; }
   </style>
 </head>
 <body>
   <h1>Super Paper Mario Text Preview</h1>
-  <textarea id="input" placeholder="Use tags from Super Paper Mario's text files! This editor supports <shake>, <wave>, <scale [size]>, <dynamic 3>, <wait [ms]>, <col [hex]>, <fairy>, <fairy2>, <kanban>, <system>, <diary>, <clear>, and <icon [button]>."></textarea>
+  <textarea id="input" placeholder="Use tags from Super Paper Mario's text files! This editor supports <shake>, <wave>, <scale [size]>, <dynamic 3>, <wait [ms]>, <col [hex]>, <fairy>, <fairy2>, <kanban>, <system>, <diary>, <clear>, <majo>, and <icon [button]>."></textarea>
   <div id="output" title="Click to advance"></div>
   <script>
-    const inputArea = document.getElementById('input');
-    const outputDiv  = document.getElementById('output');
-    let pages = [], fairyFlags = [], kanbanFlags = [], systemFlags = [], diaryFlags = [], clearFlags = [], currentPage = 0;
+    const inputArea=document.getElementById('input'), outputDiv=document.getElementById('output');
+    let pages=[], fairyFlags=[], kanbanFlags=[], systemFlags=[], diaryFlags=[], clearFlags=[], majoFlags=[], currentPage=0;
 
     function createSpan(char, effects, scale, dyn, delay) {
-      let node = document.createTextNode(char === ' ' ? '\u00A0' : char);
-      if (effects.includes('shake')) {
-        const s = document.createElement('span'); s.className = 'shake-letter'; s.style.animationDelay = delay + 'ms'; s.appendChild(node); node = s;
-      }
-      if (effects.includes('wave')) {
-        const w = document.createElement('span'); w.className = 'wave-letter'; w.style.animationDelay = delay + 'ms'; w.appendChild(node); node = w;
-      }
-      if (scale !== 1) {
-        const sc = document.createElement('span'); sc.style.display = 'inline-block'; sc.style.fontSize = scale + 'em'; sc.appendChild(node); node = sc;
-      }
-      if (dyn !== 1) {
-        const d = document.createElement('span'); d.className = 'dynamic-letter'; d.style.setProperty('--dyn-factor', dyn); d.style.animationDelay = delay + 'ms'; d.appendChild(node); node = d;
-      }
-      const f = document.createElement('span'); f.style.display = 'inline-block'; f.style.opacity = '0'; f.style.animation = `fadeIn 0s forwards ${delay}ms`; f.appendChild(node);
+      let node=document.createTextNode(char===' ' ? '\u00A0':char);
+      if(effects.includes('shake')){ const s=document.createElement('span');s.className='shake-letter';s.style.animationDelay=delay+'ms';s.appendChild(node);node=s; }
+      if(effects.includes('wave')){ const w=document.createElement('span');w.className='wave-letter';w.style.animationDelay=delay+'ms';w.appendChild(node);node=w; }
+      if(scale!==1){ const sc=document.createElement('span');sc.style.display='inline-block';sc.style.fontSize=scale+'em';sc.appendChild(node);node=sc; }
+      if(dyn!==1){ const d=document.createElement('span');d.className='dynamic-letter';d.style.setProperty('--dyn-factor',dyn);d.style.animationDelay=delay+'ms';d.appendChild(node);node=d; }
+      const f=document.createElement('span');f.style.display='inline-block';f.style.opacity='0';f.style.animation=`fadeIn 0s forwards ${delay}ms`;f.appendChild(node);
       return f;
     }
 
-    function parseCustomTags(text) {
-      const frag = document.createDocumentFragment();
-      const stack = [];
-      let dCount = 0, i = 0;
-      let hasFairy = false, hasKanban = false, hasSystem = false, hasDiary = false, hasClear = false;
-
-      while (i < text.length) {
-        const c = text[i];
-        if (c === '\n') { frag.appendChild(document.createElement('br')); i++; continue; }
-        if (c === '<') {
-          // Icon
-          const iconM = text.slice(i).match(/^<\s*icon\s+([^\s>]+)[^>]*>/i);
-          if (iconM) {
-            const arg = iconM[1];
-            const ch = arg.startsWith('PAD_') ? arg.slice(4, 5) : arg;
-            frag.appendChild(createSpan(ch, stack.filter(e => ['shake','wave'].includes(e.type)).map(e => e.type), stack.filter(e => e.type==='scale').reduce((s,e)=>s*e.factor,1), stack.filter(e=>e.type==='dynamic').reduce((s,e)=>s*e.factor,1), dCount*25));
-            dCount++; i += iconM[0].length; continue;
-          }
-          const open = text.slice(i).match(/^<\s*(shake|wave|scale|dynamic|wait|fairy|kanban|system|diary|clear|col)\s*([^>]*)>/i);
-          const close= text.slice(i).match(/^<\s*\/\s*(shake|wave|scale|dynamic|fairy|kanban|system|diary|clear|col)\s*>/i);
-          if (open) {
-            const tag = open[1].toLowerCase(); const arg= open[2].trim();
-            switch(tag) {
-              case 'wait': dCount+=Math.ceil(parseFloat(arg)/25)||0; break;
-              case 'col': stack.push({type:'col',value:arg}); break;
-              case 'scale': case 'dynamic': stack.push({type:tag,factor:parseFloat(arg)||1}); break;
-              case 'fairy': hasFairy=true; break;
-              case 'kanban': hasKanban=true; break;
-              case 'system': hasSystem=true; break;
-              case 'diary': hasDiary=true; break;
-              case 'clear': hasClear=true; break;
-              case 'shake': stack.push({type:'shake'}); break;
-              case 'wave': stack.push({type:'wave'}); break;
-            }
-            i += open[0].length; continue;
-          } else if (close) {
-            const tag = close[1].toLowerCase();
-            if (tag==='fairy')  hasFairy=false;
-            if (tag==='kanban') hasKanban=false;
-            if (tag==='system')  hasSystem=false;
-            if (tag==='diary')   hasDiary=false;
-            if (tag==='clear')   hasClear=false;
-            for (let j=stack.length-1;j>=0;j--) if(stack[j].type===tag){stack.splice(j,1);break;}
-            i += close[0].length; continue;
-          } else {
-            const unk=text.slice(i).match(/^<[^>]+>/);
-            if(unk){i+=unk[0].length; continue;}
-          }
-        }
-        const effects = stack.filter(e=>['shake','wave'].includes(e.type)).map(e=>e.type);
-        const scale = stack.filter(e=>e.type==='scale').reduce((s,e)=>s*e.factor,1);
-        const dyn   = stack.filter(e=>e.type==='dynamic').reduce((s,e)=>s*e.factor,1);
-        const col   = stack.find(e=>e.type==='col');
-        const color = col? '#'+col.value : null;
-        const delay = dCount*25;
-        let node = createSpan(c, effects, scale, dyn, delay);
-        if(color){ const cs=document.createElement('span'); cs.style.color=color; cs.appendChild(node); node=cs; }
-        frag.appendChild(node);
-        dCount++; i++;
-      }
-      return {fragment:frag, fairy:hasFairy, kanban:hasKanban, system:hasSystem, diary:hasDiary, clear:hasClear};
-    }
+    function parseCustomTags(text){
+      const frag=document.createDocumentFragment(), stack=[], flags={fairy:false,kanban:false,system:false,diary:false,clear:false,majo:false};
+      let d=0,i=0;
+      while(i<text.length){ const c=text[i];
+        if(c==='\n'){frag.appendChild(document.createElement('br'));i++;continue;}
+        if(c==='<'){ const icon=text.slice(i).match(/^<\s*icon\s+([^\s>]+)[^>]*>/i);
+          if(icon){const arg=icon[1],ch=arg.startsWith('PAD_')?arg[4]:arg;frag.appendChild(createSpan(ch,stack.filter(e=>['shake','wave'].includes(e.type)).map(e=>e.type),stack.filter(e=>e.type==='scale').reduce((s,e)=>s*e.factor,1),stack.filter(e=>e.type==='dynamic').reduce((s,e)=>s*e.factor,1),d*25));d++;i+=icon[0].length;continue;}
+          const open=text.slice(i).match(/^<\s*(shake|wave|scale|dynamic|wait|fairy|kanban|system|diary|clear|majo|col)\s*([^>]*)>/i);
+          const close=text.slice(i).match(/^<\s*\/\s*(shake|wave|scale|dynamic|fairy|kanban|system|diary|clear|majo|col)\s*>/i);
+          if(open){const t=open[1].toLowerCase(),arg=open[2].trim();switch(t){case'wait':d+=Math.ceil(parseFloat(arg)/25)||0;break;case'col':stack.push({type:'col',value:arg});break;case'scale':const ex=stack.find(e=>e.type==='scale');const nf=parseFloat(arg)||1;if(ex)ex.factor=nf;else stack.push({type:'scale',factor:nf});break;case'dynamic':if(!stack.some(e=>e.type==='dynamic'))stack.push({type:'dynamic',factor:parseFloat(arg)||1});break;case'shake':if(!stack.some(e=>e.type==='shake'))stack.push({type:'shake'});break;case'wave':if(!stack.some(e=>e.type==='wave'))stack.push({type:'wave'});break;case'fairy':flags.fairy=true;break;case'kanban':flags.kanban=true;break;case'system':flags.system=true;break;case'diary':flags.diary=true;break;case'clear':flags.clear=true;break;case'majo':flags.majo=true;break;}i+=open[0].length;continue;}else if(close){const t=close[1].toLowerCase();if(t==='fairy')flags.fairy=false;if(t==='kanban')flags.kanban=false;if(t==='system')flags.system=false;if(t==='diary')flags.diary=false;if(t==='clear')flags.clear=false;if(t==='majo')flags.majo=false;for(let j=stack.length-1;j>=0;j--)if(stack[j].type===t){stack.splice(j,1);break;}i+=close[0].length;continue;}else{const u=text.slice(i).match(/^<[^>]+>/);if(u){i+=u[0].length;continue;}}}
+        const eff=stack.filter(e=>['shake','wave'].includes(e.type)).map(e=>e.type);
+        const sc=stack.filter(e=>e.type==='scale').reduce((s,e)=>s*e.factor,1);
+        const dy=stack.filter(e=>e.type==='dynamic').reduce((s,e)=>s*e.factor,1);
+        const colE=stack.find(e=>e.type==='col');
+        const color=colE?'#'+colE.value:null;
+        const delay=d*25;
+        let node=createSpan(c,eff,sc,dy,delay);
+        if(color){const sp=document.createElement('span');sp.style.color=color;sp.appendChild(node);node=sp;}
+        frag.appendChild(node);d++;i++;}
+      return {fragment:frag, ...flags};}
 
     function generatePages(text) {
-      const parts = text.split(/(?=(?!PAD_)\b\w*_\w*\b)/);
-      pages=[]; fairyFlags=[]; kanbanFlags=[]; systemFlags=[]; diaryFlags=[]; clearFlags=[];
-      parts.forEach(raw=>{
-        const seg = raw.trim();
-        const {fragment, fairy, kanban, system, diary, clear} = parseCustomTags(seg);
-        pages.push(fragment);
-        fairyFlags.push(fairy);
-        kanbanFlags.push(kanban);
-        systemFlags.push(system);
-        diaryFlags.push(diary);
-        clearFlags.push(clear);
+  // reset all your state
+  pages      = [];
+  fairyFlags = [];
+  kanbanFlags= [];
+  systemFlags= [];
+  diaryFlags = [];
+  clearFlags = [];
+  majoFlags  = [];
+  currentPage = 0;
+
+  // helper to finalize a page
+  function pushPage(str) {
+    const res = parseCustomTags(str);
+    pages.push(res.fragment);
+    fairyFlags.push( res.fairy   );
+    kanbanFlags.push(res.kanban  );
+    systemFlags.push(res.system  );
+    diaryFlags.push( res.diary   );
+    clearFlags.push( res.clear   );
+    majoFlags.push(  res.majo    );
+  }
+
+  let currentText = '';
+  const lines = text.split('\n');
+
+  for (let rawLine of lines) {
+    const hasUnderscore = /\b\w+_\w+\b/.test(rawLine);
+    const hasK         = /<\s*k\s*>/i.test(rawLine);
+
+    // strip out any <k> tags so they don't show
+    const cleanLine = rawLine.replace(/<\s*k\s*>/gi, '');
+
+    // decide if this line should START a new page:
+    if (hasUnderscore || (hasK && !hasUnderscore)) {
+      // first, push whatever we've accumulated so far
+      if (currentText.trim() !== '') {
+        pushPage(currentText);
+      }
+      // start fresh with this line
+      currentText = cleanLine;
+    } else {
+      // otherwise, append this line to the current page
+      currentText += (currentText === '' ? '' : '\n') + cleanLine;
+    }
+  }
+
+  // push the final page
+  if (currentText.trim() !== '') {
+    pushPage(currentText);
+  }
+}
+
+  
+      parts.forEach(raw => {
+        // Remove <k> tags before parsing
+        const seg = raw.replace(/<\s*k\s*>/gi, '').trim();
+        const res = parseCustomTags(seg);
+        pages.push(res.fragment);
+        fairyFlags.push(res.fairy);
+        kanbanFlags.push(res.kanban);
+        systemFlags.push(res.system);
+        diaryFlags.push(res.diary);
+        clearFlags.push(res.clear);
+        majoFlags.push(res.majo);
       });
-      currentPage=0;
+      currentPage = 0;
     }
 
-    function showPage(idx) {
-      if(!pages[idx]) return;
-      outputDiv.innerHTML=''; outputDiv.className='';
-      if(fairyFlags[idx])  outputDiv.classList.add('fairy-border');
-      if(kanbanFlags[idx]) outputDiv.classList.add('kanban-border');
-      if(systemFlags[idx]) outputDiv.classList.add('system-style');
-      if(diaryFlags[idx])  outputDiv.classList.add('diary-style');
-      if(clearFlags[idx])  outputDiv.classList.add('clear-style');
-      outputDiv.appendChild(pages[idx].cloneNode(true));
-    }
-
-    function updatePreview() {
-      generatePages(inputArea.value); showPage(0);
-    }
-
-    inputArea.addEventListener('input', updatePreview);
-    outputDiv.addEventListener('click', ()=>{ if(currentPage<pages.length-1) showPage(++currentPage); });
-    updatePreview();
+    
+    function showPage(idx){if(!pages[idx])return;outputDiv.innerHTML='';outputDiv.className='';if(fairyFlags[idx])outputDiv.classList.add('fairy-border');if(kanbanFlags[idx])outputDiv.classList.add('kanban-border');if(systemFlags[idx])outputDiv.classList.add('system-style');if(diaryFlags[idx])outputDiv.classList.add('diary-style');if(clearFlags[idx])outputDiv.classList.add('clear-style');if(majoFlags[idx])outputDiv.classList.add('majo-style');outputDiv.appendChild(pages[idx].cloneNode(true));}
+    function updatePreview(){generatePages(inputArea.value);showPage(0);}inputArea.addEventListener('input',updatePreview);outputDiv.addEventListener('click',()=>{if(currentPage<pages.length-1)showPage(++currentPage);});updatePreview();
   </script>
 </body>
 </html>
