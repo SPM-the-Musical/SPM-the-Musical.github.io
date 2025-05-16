@@ -79,58 +79,15 @@
       return {fragment:frag, ...flags};}
 
     function generatePages(text) {
-  // reset all your state
-  pages      = [];
-  fairyFlags = [];
-  kanbanFlags= [];
-  systemFlags= [];
-  diaryFlags = [];
-  clearFlags = [];
-  majoFlags  = [];
-  currentPage = 0;
-
-  // helper to finalize a page
-  function pushPage(str) {
-    const res = parseCustomTags(str);
-    pages.push(res.fragment);
-    fairyFlags.push( res.fairy   );
-    kanbanFlags.push(res.kanban  );
-    systemFlags.push(res.system  );
-    diaryFlags.push( res.diary   );
-    clearFlags.push( res.clear   );
-    majoFlags.push(  res.majo    );
-  }
-
-  let currentText = '';
-  const lines = text.split('\n');
-
-  for (let rawLine of lines) {
-    const hasUnderscore = /\b\w+_\w+\b/.test(rawLine);
-    const hasK         = /<\s*k\s*>/i.test(rawLine);
-
-    // strip out any <k> tags so they don't show
-    const cleanLine = rawLine.replace(/<\s*k\s*>/gi, '');
-
-    // decide if this line should START a new page:
-    if (hasUnderscore || (hasK && !hasUnderscore)) {
-      // first, push whatever we've accumulated so far
-      if (currentText.trim() !== '') {
-        pushPage(currentText);
-      }
-      // start fresh with this line
-      currentText = cleanLine;
-    } else {
-      // otherwise, append this line to the current page
-      currentText += (currentText === '' ? '' : '\n') + cleanLine;
-    }
-  }
-
-  // push the final page
-  if (currentText.trim() !== '') {
-    pushPage(currentText);
-  }
-}
-
+      // Split on any underscore-word or <k> tag to start a new page
+      const parts = text.split(/(?=(?!PAD_)\b\w*_\w*\b|<\s*k\s*>)/i);
+      pages = [];
+      fairyFlags = [];
+      kanbanFlags = [];
+      systemFlags = [];
+      diaryFlags = [];
+      clearFlags = [];
+      majoFlags = [];
   
       parts.forEach(raw => {
         // Remove <k> tags before parsing
