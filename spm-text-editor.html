@@ -23,8 +23,9 @@
     @keyframes wave {
       from { transform: rotate(0deg) translateX(2px) rotate(0deg); }
       to   { transform: rotate(360deg) translateX(2px) rotate(-360deg); }
-    }to{transform:translateY(3px);} }
+    }
     @keyframes rainbow { 0%{border-color:hotpink;}12.5%{border-color:orange;}25%{border-color:yellow;}37.5%{border-color:lawngreen;}50%{border-color:cyan;}62.5%{border-color:lawngreen;}75%{border-color:yellow;}87.5%{border-color:orange;}100%{border-color:hotpink;} }
+    
     /* Letter effects */
     .shake-letter { display:inline-block; animation: shake 0.1s infinite; }
     .wave-letter { display:inline-block; animation: wave 0.9s linear infinite; transform-origin: center; }
@@ -36,7 +37,7 @@
     #output.system-style { background: darkblue; border:4px solid gray; color:white; }
     #output.diary-style { background: lightgoldenrodyellow; }
     #output.clear-style { background: black; color: white; }
-    #output.majo-style { background: #7151a9; color: white; }
+    #output.majo-style { background: #4a3867; color: #ffddddff; }
   </style>
 </head>
 <body>
@@ -57,53 +58,279 @@
       return f;
     }
 
-    function parseCustomTags(text){
-      const frag=document.createDocumentFragment(), stack=[], flags={fairy:false,kanban:false,system:false,diary:false,clear:false,majo:false};
-      let d=0,i=0;
-      while(i<text.length){ const c=text[i];
-        if(c==='\n'){frag.appendChild(document.createElement('br'));i++;continue;}
-        if(c==='<'){ const icon=text.slice(i).match(/^<\s*icon\s+([^\s>]+)[^>]*>/i);
-          if(icon){const arg=icon[1],ch=arg.startsWith('PAD_')?arg[4]:arg;frag.appendChild(createSpan(ch,stack.filter(e=>['shake','wave'].includes(e.type)).map(e=>e.type),stack.filter(e=>e.type==='scale').reduce((s,e)=>s*e.factor,1),stack.filter(e=>e.type==='dynamic').reduce((s,e)=>s*e.factor,1),d*25));d++;i+=icon[0].length;continue;}
-          const open=text.slice(i).match(/^<\s*(shake|wave|scale|dynamic|wait|fairy|kanban|system|diary|clear|majo|col)\s*([^>]*)>/i);
-          const close=text.slice(i).match(/^<\s*\/\s*(shake|wave|scale|dynamic|fairy|kanban|system|diary|clear|majo|col)\s*>/i);
-          if(open){const t=open[1].toLowerCase(),arg=open[2].trim();switch(t){case'wait':d+=Math.ceil(parseFloat(arg)/25)||0;break;case'col':stack.push({type:'col',value:arg});break;case'scale':const ex=stack.find(e=>e.type==='scale');const nf=parseFloat(arg)||1;if(ex)ex.factor=nf;else stack.push({type:'scale',factor:nf});break;case'dynamic':if(!stack.some(e=>e.type==='dynamic'))stack.push({type:'dynamic',factor:parseFloat(arg)||1});break;case'shake':if(!stack.some(e=>e.type==='shake'))stack.push({type:'shake'});break;case'wave':if(!stack.some(e=>e.type==='wave'))stack.push({type:'wave'});break;case'fairy':flags.fairy=true;break;case'kanban':flags.kanban=true;break;case'system':flags.system=true;break;case'diary':flags.diary=true;break;case'clear':flags.clear=true;break;case'majo':flags.majo=true;break;}i+=open[0].length;continue;}else if(close){const t=close[1].toLowerCase();if(t==='fairy')flags.fairy=false;if(t==='kanban')flags.kanban=false;if(t==='system')flags.system=false;if(t==='diary')flags.diary=false;if(t==='clear')flags.clear=false;if(t==='majo')flags.majo=false;for(let j=stack.length-1;j>=0;j--)if(stack[j].type===t){stack.splice(j,1);break;}i+=close[0].length;continue;}else{const u=text.slice(i).match(/^<[^>]+>/);if(u){i+=u[0].length;continue;}}}
-        const eff=stack.filter(e=>['shake','wave'].includes(e.type)).map(e=>e.type);
-        const sc=stack.filter(e=>e.type==='scale').reduce((s,e)=>s*e.factor,1);
-        const dy=stack.filter(e=>e.type==='dynamic').reduce((s,e)=>s*e.factor,1);
-        const colE=stack.find(e=>e.type==='col');
-        const color=colE?'#'+colE.value:null;
-        const delay=d*25;
-        let node=createSpan(c,eff,sc,dy,delay);
-        if(color){const sp=document.createElement('span');sp.style.color=color;sp.appendChild(node);node=sp;}
-        frag.appendChild(node);d++;i++;}
-      return {fragment:frag, ...flags};}
+    
+  function parseCustomTags(text) {
+  const frag = document.createDocumentFragment();
+  const stack = [];
+  const flags = { fairy:false, kanban:false, system:false, diary:false, clear:false, majo:false, ph:false };
+  let d = 0, i = 0;
 
-    function generatePages(text) {
-      // Split on any underscore-word or <k> tag to start a new page
-      const parts = text.split(/(?=(?!PAD_)\b\w*_\w*\b|<\s*k\s*>)/i);
-      pages = [];
-      fairyFlags = [];
-      kanbanFlags = [];
-      systemFlags = [];
-      diaryFlags = [];
-      clearFlags = [];
-      majoFlags = [];
-  
-      parts.forEach(raw => {
-        // Remove <k> tags before parsing
-        const seg = raw.replace(/<\s*k\s*>/gi, '').trim();
-        const res = parseCustomTags(seg);
-        pages.push(res.fragment);
-        fairyFlags.push(res.fairy);
-        kanbanFlags.push(res.kanban);
-        systemFlags.push(res.system);
-        diaryFlags.push(res.diary);
-        clearFlags.push(res.clear);
-        majoFlags.push(res.majo);
-      });
-      currentPage = 0;
+  // A stack of “containers” where new nodes should be appended.
+  // Start with the root fragment.
+  const containerStack = [{ type: 'root', node: frag }];
+
+  function currentContainer() {
+    return containerStack[containerStack.length - 1].node;
+  }
+
+  while (i < text.length) {
+    const c = text[i];
+
+    // 1) Newline → <br>
+    if (c === '\n') {
+      currentContainer().appendChild(document.createElement('br'));
+      i++;
+      continue;
     }
 
+    // 2) <icon ...> handler
+    const iconMatch = text.slice(i).match(/^<\s*icon\s+([^\s>]+)[^>]*>/i);
+    if (iconMatch) {
+      const arg = iconMatch[1];
+      const ch  = arg.startsWith('PAD_') ? arg.charAt(4) : arg.charAt(0);
+      currentContainer().appendChild(
+        createSpan(
+          ch,
+          stack.filter(e => ['shake','wave'].includes(e.type)).map(e => e.type),
+          stack.filter(e => e.type === 'scale').reduce((s,e) => s * e.factor, 1),
+          stack.filter(e => e.type === 'dynamic').reduce((s,e) => s * e.factor, 1),
+          d * 25
+        )
+      );
+      d++;
+      i += iconMatch[0].length;
+      continue;
+    }
+
+    // 3) Open‐tag (including <ph>)
+    const openMatch = text.slice(i).match(
+      /^<\s*(shake|wave|scale|dynamic|wait|fairy|kanban|system|diary|clear|majo|col|ph)\s*([^>]*)>/i
+    );
+    if (openMatch) {
+      const t = openMatch[1].toLowerCase();
+      const arg = openMatch[2].trim();
+
+      if (t === 'ph') {
+        // Create a wrapper <div> with zero height for <ph> ... </ph>
+        const wrapper = document.createElement('div');
+        wrapper.style.height = '0';
+        wrapper.style.overflow = 'hidden';
+        currentContainer().appendChild(wrapper);
+        // Push the wrapper onto the containerStack so subsequent content goes inside it
+        containerStack.push({ type: 'ph', node: wrapper });
+        flags.ph = true;
+      } else {
+        // All other open‐tags behave as before
+        switch (t) {
+          case 'wait':
+            d += Math.ceil(parseFloat(arg) / 25) || 0;
+            break;
+          case 'col':
+            stack.push({ type:'col', value:arg });
+            break;
+          case 'scale': {
+            const existing = stack.find(e => e.type === 'scale');
+            const nf       = parseFloat(arg) || 1;
+            if (existing) existing.factor = nf;
+            else stack.push({ type:'scale', factor:nf });
+            break;
+          }
+          case 'dynamic':
+            if (!stack.some(e => e.type === 'dynamic'))
+              stack.push({ type:'dynamic', factor:parseFloat(arg)||1 });
+            break;
+          case 'shake':
+            if (!stack.some(e => e.type === 'shake'))
+              stack.push({ type:'shake' });
+            break;
+          case 'wave':
+            if (!stack.some(e => e.type === 'wave'))
+              stack.push({ type:'wave' });
+            break;
+          case 'fairy':
+            flags.fairy = true;
+            break;
+          case 'kanban':
+            flags.kanban = true;
+            break;
+          case 'system':
+            flags.system = true;
+            break;
+          case 'diary':
+            flags.diary = true;
+            break;
+          case 'clear':
+            flags.clear = true;
+            break;
+          case 'majo':
+            flags.majo = true;
+            break;
+        }
+      }
+
+      i += openMatch[0].length;
+      continue;
+    }
+
+    // 4) Close‐tag (including </ph>)
+    const closeMatch = text.slice(i).match(
+      /^<\s*\/\s*(shake|wave|scale|dynamic|fairy|kanban|system|diary|clear|majo|col|ph)\s*>/i
+    );
+    if (closeMatch) {
+      const t = closeMatch[1].toLowerCase();
+      if (t === 'ph') {
+        // Pop the <ph> wrapper from the containerStack
+        if (containerStack[containerStack.length - 1].type === 'ph') {
+          containerStack.pop();
+        }
+        flags.ph = false;
+      } else {
+        if (t === 'fairy')  flags.fairy = false;
+        if (t === 'kanban') flags.kanban = false;
+        if (t === 'system') flags.system = false;
+        if (t === 'diary')  flags.diary = false;
+        if (t === 'clear')  flags.clear = false;
+        if (t === 'majo')   flags.majo = false;
+
+        for (let j = stack.length - 1; j >= 0; j--) {
+          if (stack[j].type === t) {
+            stack.splice(j, 1);
+            break;
+          }
+        }
+      }
+
+      i += closeMatch[0].length;
+      continue;
+    }
+
+    // 5) Strip any other junk tags
+    const junkTag = text.slice(i).match(/^<[^>]+>/);
+    if (junkTag) {
+      i += junkTag[0].length;
+      continue;
+    }
+
+    // 6) Regular character
+    const effects = stack.filter(e => ['shake','wave'].includes(e.type)).map(e => e.type);
+    const scaleVal = stack.filter(e => e.type === 'scale').reduce((s,e) => s * e.factor, 1);
+    const dynVal   = stack.filter(e => e.type === 'dynamic').reduce((s,e) => s * e.factor, 1);
+    const colorEntry = stack.find(e => e.type === 'col');
+    const color = colorEntry ? '#' + colorEntry.value : null;
+    const delay = d * 25;
+
+    let node = createSpan(c, effects, scaleVal, dynVal, delay);
+    if (color) {
+      const sp = document.createElement('span');
+      sp.style.color = color;
+      sp.appendChild(node);
+      node = sp;
+    }
+    currentContainer().appendChild(node);
+    d++;
+    i++;
+  }
+
+  return { fragment: frag, ...flags };
+}
+
+
+    
+  function generatePages(text) {
+  // Add this at the top of generatePages(text), right after the "{"
+{
+  // Automatically wrap consecutive blocks of only‐tag lines with <ph>…</ph>
+let lines = text.split('\n');
+for (let i = 0; i < lines.length; i++) {
+  // If we find a line that’s “only tags,” start of a potential block:
+  if (/^(\s*<\s*\/?\s*(?:shake|wave|scale|dynamic|wait|col|fairy|kanban|system|diary|clear|majo|icon)\b[^>]*>\s*)+$/i.test(lines[i])) {
+    // Determine the end of this consecutive block of only‐tag lines
+    let start = i;
+    let end = i;
+    while (
+      end + 1 < lines.length &&
+      /^(\s*<\s*\/?\s*(?:shake|wave|scale|dynamic|wait|col|fairy|kanban|system|diary|clear|majo|icon)\b[^>]*>\s*)+$/i.test(lines[end + 1])
+    ) {
+      end++;
+    }
+    // Append <ph> onto the line *before* this block (if it exists)
+    if (start > 0) {
+      lines[start - 1] = lines[start - 1] + '<ph>';
+    }
+    // Prepend </ph> onto the line *after* this block (if it exists)
+    if (end + 1 < lines.length) {
+      lines[end + 1] = '</ph>' + lines[end + 1];
+    }
+    // Advance i to skip over the rest of this block
+    i = end;
+  }
+}
+// Re‐join so the rest of generatePages sees the inserted <ph>…</ph>
+text = lines.join('\n');
+
+
+// Insert newline before other text when spaces follow an underscore-word
+text = text
+  .split('\n')
+  .map(line => {
+    // If this line contains an underscore-word
+    if (/\b\w+_\w+\b/.test(line)) {
+      // Strip out any tags to see what plain text remains
+      const stripped = line.replace(/<[^>]+>/g, '');
+      // If there's spaces then other text after the underscore-word
+      if (/\b\w+_\w+\b(\s+)(?=\S)/.test(stripped)) {
+        // Place a newline immediately after those spaces following the underscore-word
+        return line.replace(/(\b\w+_\w+\b)(\s+)(?=\S)/, '$1$2\n');
+      }
+    }
+    return line;
+  })
+  .join('\n');
+
+// Split only on underscore-words
+const parts = text.split(/(?=(?!PAD_)\b\w+_\w*\b)/);
+
+
+
+  // Reset pages & flags
+  pages = [];
+  fairyFlags = [];
+  kanbanFlags = [];
+  systemFlags = [];
+  diaryFlags = [];
+  clearFlags = [];
+  majoFlags = [];
+
+
+// Process each segment, collapsing <ph> lines to zero height
+parts.forEach(raw => {
+  const trimmed = raw.trim();
+  const { fragment, fairy, kanban, system, diary, clear, majo, ph } = parseCustomTags(trimmed);
+
+  if (ph) {
+    // Wrap the placeholder-only content so it takes zero height
+    const wrapper = document.createElement('div');
+    wrapper.style.height = '0';
+    wrapper.style.overflow = 'hidden';
+    wrapper.appendChild(fragment);
+    pages.push(wrapper);
+  } else {
+    // Normal line: keep the parsed fragment as-is
+    pages.push(fragment);
+  }
+
+  // Push flags (keep flags.ph if needed later, though it's only for collapsing)
+  fairyFlags.push(fairy);
+  kanbanFlags.push(kanban);
+  systemFlags.push(system);
+  diaryFlags.push(diary);
+  clearFlags.push(clear);
+  majoFlags.push(majo);
+});
+
+// Start at the first page
+currentPage = 0;
+}}
     
     function showPage(idx){if(!pages[idx])return;outputDiv.innerHTML='';outputDiv.className='';if(fairyFlags[idx])outputDiv.classList.add('fairy-border');if(kanbanFlags[idx])outputDiv.classList.add('kanban-border');if(systemFlags[idx])outputDiv.classList.add('system-style');if(diaryFlags[idx])outputDiv.classList.add('diary-style');if(clearFlags[idx])outputDiv.classList.add('clear-style');if(majoFlags[idx])outputDiv.classList.add('majo-style');outputDiv.appendChild(pages[idx].cloneNode(true));}
     function updatePreview(){generatePages(inputArea.value);showPage(0);}inputArea.addEventListener('input',updatePreview);outputDiv.addEventListener('click',()=>{if(currentPage<pages.length-1)showPage(++currentPage);});updatePreview();
