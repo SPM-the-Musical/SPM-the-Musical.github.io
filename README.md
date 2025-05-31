@@ -14,10 +14,10 @@ Nutshell.setOptions({
 </p>
 
 # Welcome to the unofficial website for Super Paper Mario the Musical!
-Latest video: [:Bowser Battle](https://youtu.be/yaYPcYaXIPQ)
+Latest video: [:Fort Francis](https://youtu.be/VJvtChz11dc)
 
 # What is Super Paper Mario the Musical?
-Super Paper Mario the Musical is a YouTube series created by Game Rec Room, a talented group of artists, lyricists, and singers. It is a full lyrical adaptation of [:Super Paper Mario](https://en.m.wikipedia.org/wiki/Super_Paper_Mario), with 15 songs currently released and 35 more planned!
+Super Paper Mario the Musical is a YouTube series created by Game Rec Room, a talented group of artists, lyricists, and singers. It is a full lyrical adaptation of [:Super Paper Mario](https://en.m.wikipedia.org/wiki/Super_Paper_Mario), with 16 songs currently released and 34 more planned!
 
 # Can I help?
 The answer depends on what exactly you want to help with. To find out, you should DM @Coolskeleton95. on Discord, or join the [Game Rec Room Discord server](https://discord.com/invite/G3sxEaBPJR) and ask him there!
@@ -34,7 +34,7 @@ Third, this tutorial is for Dolphin Emulator only. I'm sure you can do this on a
 # How to add custom songs to Super Paper Mario
 
 ## First, you need to download some stuff. 
-Download [Dolphin Emulator](https://dolphin-emu.org/download/) (if you don't have it installed already), the [Super Paper Mario HD Music mod](https://drive.google.com/file/d/1XHvVyVl5yz8epFRV66vWjbL7cuMbxGbQ), and a [Super Paper Mario ROM](https://myrient.erista.me/files/Redump/Nintendo%20-%20Wii%20-%20NKit%20RVZ%20[zstd-19-128k]/Super%20Paper%20Mario%20%28USA%29%20%28Rev%202%29.zip). You also need to download the song you want as a music file (.mp3, .wav, or .ogg). If you want a song from a YouTube video, I recommend using [Yout](https://yout.com/). 
+Download [Dolphin Emulator](https://dolphin-emu.org/download/) (if you don't have it installed already), the [Super Paper Mario HD Music mod](https://drive.google.com/file/d/1XHvVyVl5yz8epFRV66vWjbL7cuMbxGbQ), and a [Super Paper Mario ROM](https://myrient.erista.me/files/Redump/Nintendo%20-%20Wii%20-%20NKit%20RVZ%20[zstd-19-128k]/Super%20Paper%20Mario%20%28USA%29%20%28Rev%202%29.zip). You also need to download the song you want as a music file (.mp3, .wav, or .ogg). If you want a song from a YouTube video, I recommend using [yt-dlp](https://ytdlp.online/). 
 
 ## Then you have to set up the game and the emulator it runs on. (Skip this step if you already have Dolphin installed.)
 Start up Dolphin Emulator by unzipping the zip folder and double-clicking the file called "Dolphin.exe" (or the usual type of executable/app file if you're not using Windows). If you haven't already, Dolphin will ask you to pick a location to store your games. I recommend making a new folder called "ROMs" that you can place all your emulator games into. Once you've decided where to put your ganes, put your Super Paper Mario ROM into that folder. 
