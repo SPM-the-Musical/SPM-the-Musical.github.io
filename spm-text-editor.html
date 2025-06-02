@@ -74,7 +74,9 @@
   }
 
   while (i < text.length) {
-    const c = text[i];
+    let c = text[i];
+    if (c === 'Þ') c = '☆';
+    if (c === '®') c = '→';
 
     // 1) Newline → <br>
     if (c === '\n') {
@@ -83,24 +85,34 @@
       continue;
     }
 
-    // 2) <icon ...> handler
-    const iconMatch = text.slice(i).match(/^<\s*icon\s+([^\s>]+)[^>]*>/i);
-    if (iconMatch) {
-      const arg = iconMatch[1];
-      const ch  = arg.startsWith('PAD_') ? arg.charAt(4) : arg.charAt(0);
-      currentContainer().appendChild(
-        createSpan(
-          ch,
-          stack.filter(e => ['shake','wave'].includes(e.type)).map(e => e.type),
-          stack.filter(e => e.type === 'scale').reduce((s,e) => s * e.factor, 1),
-          stack.filter(e => e.type === 'dynamic').reduce((s,e) => s * e.factor, 1),
-          d * 25
-        )
-      );
-      d++;
-      i += iconMatch[0].length;
-      continue;
-    }
+// 2) ICON handler (must be before generic open‐tag logic)
+const iconMatch = text.slice(i).match(/^<\s*icon\s+([^\s>]+)(.*?)>/i);
+if (iconMatch) {
+  const arg = iconMatch[1];
+  const upperArg = arg.toUpperCase();
+
+
+
+  // Create spans for each character in displayText
+  for (const ch of displayText) {
+    currentContainer().appendChild(
+      createSpan(
+        ch,
+        stack.filter(e => ['shake','wave'].includes(e.type)).map(e => e.type),
+        stack.filter(e => e.type === 'scale').reduce((s,e) => s * e.factor, 1),
+        stack.filter(e => e.type === 'dynamic').reduce((s,e) => s * e.factor, 1),
+        d * 25
+      )
+    );
+    d++;
+  }
+
+  // Advance past the entire <icon …> tag
+  i += iconMatch[0].length;
+  continue;
+}
+
+
 
     // 3) Open‐tag (including <ph>)
     const openMatch = text.slice(i).match(
@@ -218,7 +230,7 @@
     const colorEntry = stack.find(e => e.type === 'col');
     const color = colorEntry ? '#' + colorEntry.value : null;
     const delay = d * 25;
-
+    
     let node = createSpan(c, effects, scaleVal, dynVal, delay);
     if (color) {
       const sp = document.createElement('span');
@@ -269,27 +281,67 @@ for (let i = 0; i < lines.length; i++) {
 text = lines.join('\n');
 
 
-// Insert newline before other text when spaces follow an underscore-word
+// Insert newline before other text whenever an underscore‐word is followed by non‐space
 text = text
   .split('\n')
   .map(line => {
-    // If this line contains an underscore-word
+    // Apply only if there’s at least one underscore‐word
     if (/\b\w+_\w+\b/.test(line)) {
-      // Strip out any tags to see what plain text remains
+      // Remove tags to check plain text
       const stripped = line.replace(/<[^>]+>/g, '');
-      // If there's spaces then other text after the underscore-word
-      if (/\b\w+_\w+\b(\s+)(?=\S)/.test(stripped)) {
-        // Place a newline immediately after those spaces following the underscore-word
-        return line.replace(/(\b\w+_\w+\b)(\s+)(?=\S)/, '$1$2\n');
-      }
+      // Insert “\n” after the spaces that follow every underscore‐word
+      return line.replace(
+        /(\b\w+_\w+\b)(\s+)(?=\S)/g,
+        '$1$2\n'
+      );
     }
     return line;
   })
   .join('\n');
 
-// Split only on underscore-words
-const parts = text.split(/(?=(?!PAD_)\b\w+_\w*\b)/);
 
+// Resolve all <icon …> tags into text so their underscores won’t split pages
+text = text.replace(/<\s*icon\s+([^\s>]+)[^>]*>/gi, (match, arg) => {
+  const upper = arg.toUpperCase();
+  let displayText;
+
+  if (upper.startsWith('STICK')) {
+    displayText = '🞧';
+  } else if (upper.startsWith('AC_STAR')) {
+    displayText = 'Star';
+  } else if (upper === 'PAD_PLUS') {
+    displayText = '⊕';
+  } else if (upper === 'PAD_MINUS') {
+    displayText = '⊖';
+  } else if (upper === 'PAD_1') {
+    displayText = '①';
+  } else if (upper === 'PAD_2') {
+    displayText = '②';
+  } else if (upper === 'PAD_A') {
+    displayText = 'Ⓐ';
+  } else if (upper.startsWith('AC_KOURA')) {
+    displayText = 'Shell';
+  } else if (upper.startsWith('AC_ON')) {
+    displayText = 'Circle';
+  } else if (upper === 'HM') {
+    displayText = '♡';
+  } else if (upper.startsWith('AC_KINOKO')) {
+    displayText = 'Mushroom';
+  } else if (upper.startsWith('CRYSTAL')) {
+  displayText = '    [Merlumina\'s face]';
+  } else if (upper.startsWith('PAD_') && upper.length > 4) {
+    return upper.charAt(4);
+  } else if (upper === 'PAD') {
+    displayText = 'Wii Remote';
+  } else {
+    return upper.charAt(0);
+  }
+
+  return displayText;
+});
+  
+// Now split only on “real” underscore-words (icons have already been removed)
+const parts = text.split(/(?=(?!PAD_)\b\w+_\w*\b)/);
 
 
   // Reset pages & flags
