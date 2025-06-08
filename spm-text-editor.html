@@ -32,7 +32,7 @@
     .dynamic-letter { display:inline-block; transform: scale(var(--dyn-factor)); animation: dynamicShrink 0.05s forwards; }
 
     /* Page container styles */
-    #output.fairy-border { border:4px solid; animation: rainbow 8s linear infinite; }
+    #output.fairy-border { border:4px solid; animation: rainbow 5s linear infinite; }
     #output.kanban-border { border:4px solid brown; }
     #output.system-style { background: darkblue; border:4px solid gray; color:white; }
     #output.diary-style { background: lightgoldenrodyellow; }
@@ -76,7 +76,11 @@
   while (i < text.length) {
     let c = text[i];
     if (c === 'Þ') c = '☆';
-    if (c === '®') c = '→';
+    if (c === '®') c = '←';
+    if (c === '©') c = '→';
+    if (c === 'Ø') c = '♪';
+    if (c === '³') c = '↓';
+    if (c === '²') c = '↑';
 
     // 1) Newline → <br>
     if (c === '\n') {
@@ -85,33 +89,142 @@
       continue;
     }
 
-// 2) ICON handler (must be before generic open‐tag logic)
-const iconMatch = text.slice(i).match(/^<\s*icon\s+([^\s>]+)(.*?)>/i);
+
+// ICON handler (inside parseCustomTags, at top of the while loop)
+const iconMatch = text.slice(i).match(/^<\s*icon\s+([^\s>]+)[^>]*>/i);
 if (iconMatch) {
-  const arg = iconMatch[1];
-  const upperArg = arg.toUpperCase();
+  const arg   = iconMatch[1].toUpperCase();
+  // CRYSTAL → image
+  if (arg === 'CRYSTAL') {
+    const img = document.createElement('img');
+    img.src    = 'images/Merlumina.png';
+    img.alt    = 'Merlumina';
+    img.style.width  = '1em';
+    img.style.height = '1em';
+    currentContainer().appendChild(img);
+  } else if (arg === 'AC_STAR') {
+  const img = document.createElement('img');
+    img.src    = 'images/Star.png';
+    img.alt    = 'Shooting Star';
+    img.style.width  = '1em';
+    img.style.height = '1em';
+    currentContainer().appendChild(img);
+  } else if (arg === 'AC_KOURA') {
+  const img = document.createElement('img');
+    img.src    = 'images/Shell.png';
+    img.alt    = 'Shell';
+    img.style.width  = '1em';
+    img.style.height = '1em';
+    currentContainer().appendChild(img);
+  } else if (arg === 'AC_ON') {
+  const img = document.createElement('img');
+    img.src    = 'images/Circle.png';
+    img.alt    = 'Circle with star';
+    img.style.width  = '1em';
+    img.style.height = '1em';
+    currentContainer().appendChild(img);
+  } else if (arg === 'AC_KINOKO') {
+  const img = document.createElement('img');
+    img.src    = 'images/Mushroom.png';
+    img.alt    = 'Mushroom';
+    img.style.width  = '1em';
+    img.style.height = '1em';
+    currentContainer().appendChild(img);
+	} else if (arg === 'PAD_PLUS') {
+  const img = document.createElement('img');
+    img.src    = 'images/Plus.png';
+    img.alt    = 'Plus button';
+    img.style.width  = '1em';
+    img.style.height = '1em';
+    currentContainer().appendChild(img);
+	} else if (arg === 'PAD_MINUS') {
+  const img = document.createElement('img');
+    img.src    = 'images/Minus.png';
+    img.alt    = 'Minus button';
+    img.style.width  = '1em';
+    img.style.height = '1em';
+    currentContainer().appendChild(img);
+	} else if (arg === 'STICK') {
+  const img = document.createElement('img');
+    img.src    = 'images/Dpad.png';
+    img.alt    = 'D-Pad';
+    img.style.width  = '1em';
+    img.style.height = '1em';
+    currentContainer().appendChild(img);
+	} else if (arg === 'PAD') {
+  const img = document.createElement('img');
+    img.src    = 'images/Wiimote.png';
+    img.alt    = 'Wii remote';
+    img.style.width  = '4em';
+    img.style.height = '1em';
+    currentContainer().appendChild(img);
+  } else if (arg === 'PAD_1') {
+  const img = document.createElement('img');
+    img.src    = 'images/1.png';
+    img.alt    = '1 button';
+    img.style.width  = '1em';
+    img.style.height = '1em';
+    currentContainer().appendChild(img);
+  } else if (arg === 'PAD_2') {
+  const img = document.createElement('img');
+    img.src    = 'images/2.png';
+    img.alt    = '2 button';
+    img.style.width  = '1em';
+    img.style.height = '1em';
+    currentContainer().appendChild(img);
+  } else if (arg === 'PAD_A') {
+  const img = document.createElement('img');
+    img.src    = 'images/A.png';
+    img.alt    = 'A button';
+    img.style.width  = '1em';
+    img.style.height = '1em';
+    currentContainer().appendChild(img);
+  } else {
+    let displayText;
+    if (arg.startsWith('STICK')) 
+    displayText = '✚';
+    else if (arg === 'AC_STAR')
+    displayText = 'Star';
+    else if (arg === 'PAD_PLUS') 
+    displayText = '⊕';
+    else if (arg === 'PAD_MINUS') 
+    displayText = '⊖';
+    else if (arg === 'PAD_1') 
+    displayText = '①';
+    else if (arg === 'PAD_2') 
+    displayText = '②';
+    else if (arg === 'PAD_A') 
+    displayText = 'Ⓐ';
+    else if (arg.startsWith('AC_KOURA')) 
+    displayText = 'Shell';
+    else if (arg.startsWith('AC_ON')) 
+    displayText = 'Circle';
+    else if (arg === 'HM') 
+    displayText = '♡';
+    else if (arg.startsWith('AC_KINOKO')) 
+    displayText = 'Mushroom';
+	else {
+      displayText = arg.charAt(0);
+    }
 
-
-
-  // Create spans for each character in displayText
-  for (const ch of displayText) {
-    currentContainer().appendChild(
-      createSpan(
-        ch,
-        stack.filter(e => ['shake','wave'].includes(e.type)).map(e => e.type),
-        stack.filter(e => e.type === 'scale').reduce((s,e) => s * e.factor, 1),
-        stack.filter(e => e.type === 'dynamic').reduce((s,e) => s * e.factor, 1),
-        d * 25
-      )
-    );
-    d++;
+    for (const ch of displayText) {
+      currentContainer().appendChild(
+        createSpan(
+          ch,
+          stack.filter(e => ['shake','wave'].includes(e.type)).map(e => e.type),
+          stack.filter(e => e.type === 'scale').reduce((s,e) => s * e.factor, 1),
+          stack.filter(e => e.type === 'dynamic').reduce((s,e) => s * e.factor, 1),
+          d * 25
+        )
+      );
+      d++;
+    }
   }
 
-  // Advance past the entire <icon …> tag
+  // advance past the <icon…> tag and resume parsing
   i += iconMatch[0].length;
   continue;
 }
-
 
 
     // 3) Open‐tag (including <ph>)
@@ -299,14 +412,14 @@ text = text
   })
   .join('\n');
 
-
+/*
 // Resolve all <icon …> tags into text so their underscores won’t split pages
 text = text.replace(/<\s*icon\s+([^\s>]+)[^>]*>/gi, (match, arg) => {
   const upper = arg.toUpperCase();
   let displayText;
 
   if (upper.startsWith('STICK')) {
-    displayText = '🞧';
+    displayText = '✚';
   } else if (upper.startsWith('AC_STAR')) {
     displayText = 'Star';
   } else if (upper === 'PAD_PLUS') {
@@ -339,9 +452,10 @@ text = text.replace(/<\s*icon\s+([^\s>]+)[^>]*>/gi, (match, arg) => {
 
   return displayText;
 });
+*/
   
 // Now split only on “real” underscore-words (icons have already been removed)
-const parts = text.split(/(?=(?!PAD_)\b\w+_\w*\b)/);
+const parts = text.split(/(?=(?!PAD_|AC_)\b\w+_\w*\b)/);
 
 
   // Reset pages & flags
