@@ -14,7 +14,7 @@ Nutshell.setOptions({
 </p>
 
 # Welcome to the unofficial website for Super Paper Mario the Musical!
-Latest video: [:Francis Battle](https://youtu.be/7diTWogjzww)
+Latest video: [:Drifting Through Time / Memory 1](https://youtu.be/MNvmx4PO_bU)
 
 # What is Super Paper Mario the Musical?
 Super Paper Mario the Musical is a YouTube series created by Game Rec Room, a talented group of artists, lyricists, and singers. It is a full lyrical adaptation of [:Super Paper Mario](https://en.m.wikipedia.org/wiki/Super_Paper_Mario), with 17 songs currently released and 33 more planned!
