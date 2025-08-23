@@ -14,7 +14,7 @@ Nutshell.setOptions({
 </p>
 
 # Welcome to the unofficial website for Super Paper Mario the Musical!
-Latest video: [:The Open Plane](https://youtu.be/nn0t4zlRcP4)
+Latest video: [:Outer Space](https://youtu.be/VkFygee9VhY)
 
 # What is Super Paper Mario the Musical?
 Super Paper Mario the Musical is a YouTube series created by Game Rec Room, a talented group of artists, lyricists, and singers. It is a full lyrical adaptation of [:Super Paper Mario](https://en.m.wikipedia.org/wiki/Super_Paper_Mario), with 18 songs currently released and 32 more planned!
