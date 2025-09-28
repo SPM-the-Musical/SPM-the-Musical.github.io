@@ -14,10 +14,12 @@ Nutshell.setOptions({
 </p>
 
 # Welcome to the unofficial website for Super Paper Mario the Musical!
-Latest video: [:Brobot Battle](https://youtu.be/fwKhdZ_WdbY)
+Latest video: [:Flint Cragley, Cragtrotter!](https://youtu.be/i0hwkCsnR2w)
+
+(Updates here may be slow, subscribe to the YouTube channel or join the Discord server for more reliable updates!)
 
 # What is Super Paper Mario the Musical?
-Super Paper Mario the Musical is a YouTube series created by Game Rec Room, a talented group of artists, lyricists, and singers. It is a full lyrical adaptation of [:Super Paper Mario](https://en.m.wikipedia.org/wiki/Super_Paper_Mario), with 23 songs currently released and 27 more planned!
+Super Paper Mario the Musical is a YouTube series created by Game Rec Room, a talented group of artists, lyricists, and singers. It is a full lyrical adaptation of [:Super Paper Mario](https://en.m.wikipedia.org/wiki/Super_Paper_Mario), with 24 songs currently released and 26 more planned!
 
 # Can I help?
 The answer depends on what exactly you want to help with. To find out, you should DM @Coolskeleton95. on Discord, or join the [Game Rec Room Discord server](https://discord.com/invite/G3sxEaBPJR) and ask him there!
