@@ -14,7 +14,7 @@ Nutshell.setOptions({
 </p>
 
 # Welcome to the unofficial website for Super Paper Mario the Musical!
-Latest video: [:Flint Cragley, Cragtrotter!](https://youtu.be/i0hwkCsnR2w)
+Latest video: [:Gap of Crag](https://youtu.be/KvNqBYcLDyQ)
 
 (Updates here may be slow, subscribe to the YouTube channel or join the Discord server for more reliable updates!)
 
