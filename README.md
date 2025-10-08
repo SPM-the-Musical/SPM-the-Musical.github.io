@@ -16,7 +16,7 @@ Nutshell.setOptions({
 # Welcome to the unofficial website for Super Paper Mario the Musical!
 Latest video: [:Gap of Crag](https://youtu.be/KvNqBYcLDyQ)
 
-(Updates here may be slow, subscribe to the YouTube channel or join the Discord server for more reliable updates!)
+(Updates here may be slow, subscribe to [the YouTube channel](https://youtube.com/@gamerecroom) or join [the Discord server](https://discord.com/invite/G3sxEaBPJR) for more reliable updates!)
 
 # What is Super Paper Mario the Musical?
 Super Paper Mario the Musical is a YouTube series created by Game Rec Room, a talented group of artists, lyricists, and singers. It is a full lyrical adaptation of [:Super Paper Mario](https://en.m.wikipedia.org/wiki/Super_Paper_Mario), with 25 songs currently released and 25 more planned!
