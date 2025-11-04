@@ -14,12 +14,12 @@ Nutshell.setOptions({
 </p>
 
 # Welcome to the unofficial website for Super Paper Mario the Musical!
-Latest video: [:Gap of Crag](https://youtu.be/KvNqBYcLDyQ)
+Latest video: [:King Croacus IV Battle](https://youtu.be/8W46DKnOPME)
 
 (Updates here may be slow, subscribe to [the YouTube channel](https://youtube.com/@gamerecroom) or join [the Discord server](https://discord.com/invite/G3sxEaBPJR) for more reliable updates!)
 
 # What is Super Paper Mario the Musical?
-Super Paper Mario the Musical is a YouTube series created by Game Rec Room, a talented group of artists, lyricists, and singers. It is a full lyrical adaptation of [:Super Paper Mario](https://en.m.wikipedia.org/wiki/Super_Paper_Mario), with 25 songs currently released and 25 more planned!
+Super Paper Mario the Musical is a YouTube series created by Game Rec Room, a talented group of artists, lyricists, and singers. It is a full lyrical adaptation of [:Super Paper Mario](https://en.m.wikipedia.org/wiki/Super_Paper_Mario), with 27 songs currently released and 23 more planned!
 
 # Can I help?
 The answer depends on what exactly you want to help with. To find out, you should DM the director, [@Coolskeleton95.](https://discord.com/users/311616990206754816), on Discord, or join the [Game Rec Room Discord server](https://discord.com/invite/G3sxEaBPJR) and ask him there!
