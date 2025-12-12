@@ -25,5 +25,5 @@ Super Paper Mario the Musical is a YouTube series created by Game Rec Room, a ta
 The answer depends on what exactly you want to help with. To find out, you should DM the director, [@Coolskeleton95.](https://discord.com/users/311616990206754816), on Discord, or join the [Game Rec Room Discord server](https://discord.com/invite/G3sxEaBPJR) and ask him there!
 
 # Can I put songs from the musical into the game?
-Yes, you can! Just go to my personal website and follow [this tutorial](https://thecomputercrasher.github.io/spm-custom-songs). M
+Yes, you can! Just go to my personal website and follow [this tutorial](https://thecomputercrasher.github.io/spm-custom-songs).
 Just make sure to credit Game Rec Room if you decide to share it as a mod!
