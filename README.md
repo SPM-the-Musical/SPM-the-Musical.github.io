@@ -14,16 +14,16 @@ Nutshell.setOptions({
 </p>
 
 # Welcome to the unofficial website for Super Paper Mario the Musical!
-Latest video: [Bonechill Battle](https://youtu.be/ZOqrrGYws5o)
+Latest video: [:Memory 3 - Wading Through Time](https://youtu.be/ZOqrrGYws5o)
 
 (Updates here may be slow, subscribe to [the YouTube channel](https://youtube.com/@gamerecroom) or join [the Discord server](https://discord.com/invite/G3sxEaBPJR) for more reliable updates!)
 
 # What is Super Paper Mario the Musical?
-Super Paper Mario the Musical is a YouTube series created by Game Rec Room, a talented group of artists, lyricists, and singers. It is a full lyrical adaptation of [:Super Paper Mario](https://en.m.wikipedia.org/wiki/Super_Paper_Mario), with 38 videos currently released and 12 more planned!
+Super Paper Mario the Musical is a YouTube series created by Game Rec Room, a talented group of artists, lyricists, and singers. It is a full lyrical adaptation of [:Super Paper Mario](https://en.m.wikipedia.org/wiki/Super_Paper_Mario), with 43 videos currently released and 7 more planned!
 
 # Can I help?
 The answer depends on what exactly you want to help with. To find out, you should DM the director, [@Coolskeleton95.](https://discord.com/users/311616990206754816), on Discord, or join the [Game Rec Room Discord server](https://discord.com/invite/G3sxEaBPJR) and ask him there!
 
 # Can I put songs from the musical into the game?
-Yes, you can! Just go to my personal website and follow [this tutorial](https://thecomputercrasher.github.io/spm-custom-songs).
+Yes, you can! Just go follow [this tutorial](https://thecomputercrasher.github.io/spm-custom-songs) on my personal website.
 Just make sure to credit Game Rec Room if you decide to share it as a mod!
