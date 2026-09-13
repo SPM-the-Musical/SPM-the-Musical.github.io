@@ -14,15 +14,15 @@ Nutshell.setOptions({
 </p>
 
 # Welcome to the unofficial website for Super Paper Mario the Musical!
-Latest video: [:O'Chunks Reprise](https://youtu.be/TL-N8QfWvwk)
+Latest video: [:Closing Battle](https://youtu.be/MrF0R1KC1Io)
 
 (Updates here may be slow, subscribe to [the YouTube channel](https://youtube.com/@gamerecroom) or join [the Discord server](https://discord.com/invite/G3sxEaBPJR) for more reliable updates!)
 
 # What is Super Paper Mario the Musical?
-Super Paper Mario the Musical is a YouTube series created by Game Rec Room, a talented group of artists, lyricists, and singers. It is a full lyrical adaptation of [:Super Paper Mario](https://en.m.wikipedia.org/wiki/Super_Paper_Mario), with 44 videos currently released and 6 more planned!
+Super Paper Mario the Musical is a YouTube series created by Game Rec Room, a talented group of artists, lyricists, and singers. It is a full lyrical adaptation of [:Super Paper Mario](https://en.m.wikipedia.org/wiki/Super_Paper_Mario), with 45 videos currently released and 5 more planned!
 
 # Can I help?
-The answer depends on what exactly you want to help with. To find out, you should DM the director, [@Coolskeleton95.](https://discord.com/users/311616990206754816), on Discord, or join the [Game Rec Room Discord server](https://discord.com/invite/G3sxEaBPJR) and ask him there!
+The musical is nearly over, so probably not. To find out, you can DM the director, [@Coolskeleton95.](https://discord.com/users/311616990206754816), on Discord, or join the [Game Rec Room Discord server](https://discord.com/invite/G3sxEaBPJR) and ask him there!
 
 # Can I put songs from the musical into the game?
 Yes, you can! Just go follow [this tutorial](https://thecomputercrasher.github.io/spm-custom-songs) on my personal website.
